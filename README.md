@@ -8,8 +8,8 @@ Este repositório contém o **Front-end relacionado ao projeto Rota Verde**.
 
 ### 1️⃣ Clonando o Repositório
 ```bash
-  git clone https://github.com/seu-usuario/broadfactor-site.git
-  cd broadfactor-site
+  git clone https://github.com/rota-verde/front-end.git
+  cd front-end
 ```
 
 ### 2️⃣ Instalando as Dependências
