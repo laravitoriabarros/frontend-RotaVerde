@@ -10,6 +10,7 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
+import { TanStackProvider } from '~/providers/tanstack-provider';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -50,6 +51,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+     <TanStackProvider>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
       <Stack>
         <Stack.Screen
@@ -61,7 +63,8 @@ export default function RootLayout() {
         />
       </Stack>
       <PortalHost />
-    </ThemeProvider>
+    </TanStackProvider>
+   </ThemeProvider>
   );
 }
 
