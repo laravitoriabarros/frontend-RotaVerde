@@ -1,37 +1,29 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
-import { useRouter } from 'expo-router'; // Importando o useRouter do expo-router
-import Icon from 'react-native-vector-icons/Feather'; // Usando Feather para os ícones
+import { useRouter } from 'expo-router';
+import Icon from 'react-native-vector-icons/Feather';
 
 export default function Perfil() {
   const router = useRouter();
 
-  // Função para navegar para a tela anterior
-  const handleGoBack = () => {
-    router.back(); // Volta para a tela anterior
-  };
-
-  // Função para navegação clicando nas opções
   const handleOptionPress = (option: string) => {
-    // Por enquanto não faz nada, mas você pode adicionar as ações mais tarde
-    console.log(`Opção clicada: ${option}`);
+    if (option === 'Sair da conta') {
+      router.replace('/login');
+    } else {
+      console.log(`Opção clicada: ${option}`);
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho com a imagem de perfil */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-          <Icon name="arrow-left" size={24} color="white" />
-        </TouchableOpacity>
         <Image
-          source={require('../assets/images/perfil-roxo-homem.png')} // Caminho correto da imagem de perfil
+          source={require('../assets/images/perfil-roxo-homem.png')}
           style={styles.profileImage}
         />
         <Text style={styles.changePhoto}>Mudar Foto</Text>
       </View>
 
-      {/* Opções clicáveis */}
       <View style={styles.options}>
         <TouchableOpacity onPress={() => handleOptionPress('Mudar Senha')}>
           <Text style={styles.optionText}>Mudar Senha</Text>
@@ -51,31 +43,33 @@ export default function Perfil() {
         <TouchableOpacity onPress={() => handleOptionPress('Excluir Conta')}>
           <Text style={styles.optionText}>Excluir Conta</Text>
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleOptionPress('Sair da conta')}>
+          <Text style={[styles.optionText, { color: '#B00020' }]}>Sair da conta</Text>
+        </TouchableOpacity>
       </View>
 
-      {/* Barra Inferior */}
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/')} // Página inicial (home)
+          onPress={() => router.push('/Usuario/pagina-inicial')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/mapa')} // Mapa
+          onPress={() => router.push('/Usuario/mapa')}
         >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/tutoriais')} // Tutoriais
+          onPress={() => router.push('/Usuario/tutoriais')}
         >
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/perfil')} // Perfil
+          onPress={() => router.push('/perfil')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
@@ -90,15 +84,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   header: {
-    backgroundColor: '#3629B7', // Cabeçalho roxo
+    backgroundColor: '#3629B7',
     alignItems: 'center',
     paddingVertical: 20,
-  },
-  backButton: {
-    position: 'absolute',
-    left: 20,
-    top: 20,
-    padding: 10,
   },
   profileImage: {
     width: 100,
@@ -128,7 +116,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'white', // Barra inferior com fundo branco
+    backgroundColor: 'white',
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
   },

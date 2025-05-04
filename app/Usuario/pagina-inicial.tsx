@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   title: {
-    fontSize: 30, // Aumentei um pouco a fonte
+    fontSize: 30, 
     fontWeight: 'bold',
     color: '#2F2F2F',
   },

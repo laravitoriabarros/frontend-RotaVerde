@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router'; 
-import Icon from 'react-native-vector-icons/Feather'; 
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Image,
+  Alert,
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import Icon from 'react-native-vector-icons/Feather';
+import * as Location from 'expo-location';
+import { Picker } from '@react-native-picker/picker';
 
 export default function CadastrarImovel() {
   const router = useRouter();
 
-  // Estado para armazenar os valores dos campos
   const [nome, setNome] = useState('');
   const [tipoImovel, setTipoImovel] = useState('');
   const [lixoReciclavel, setLixoReciclavel] = useState('');
   const [localizacao, setLocalizacao] = useState('');
 
-  
   const handleGoBack = () => {
-    router.back(); 
+    router.back();
   };
-
 
   const handleSubmit = () => {
     console.log({
@@ -25,25 +33,43 @@ export default function CadastrarImovel() {
       lixoReciclavel,
       localizacao,
     });
-    // Navega para a tela final
+
     router.push('/Usuario/final-cad-imovel');
+  };
+
+  const obterLocalizacao = async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permissão negada', 'Não foi possível acessar a localização.');
+        return;
+      }
+
+      const location = await Location.getCurrentPositionAsync({});
+      const [address] = await Location.reverseGeocodeAsync(location.coords);
+
+      if (address) {
+        const texto = `${address.street ?? ''}, ${address.subregion ?? ''} - ${address.city ?? ''}`;
+        setLocalizacao(texto.trim());
+      }
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível obter a localização.');
+    }
   };
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho com a imagem */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-          <Icon name="arrow-left" size={24} color="#4EC063" />  {/* Seta verde */}
+          <Icon name="arrow-left" size={24} color="#4EC063" />
         </TouchableOpacity>
       </View>
 
-      {/* Título e instruções */}
+      <Image source={require('../../assets/images/web.png')} style={styles.image} />
+
       <Text style={styles.title}>Vamos começar!</Text>
 
-      {/* ScrollView para permitir rolagem */}
       <ScrollView contentContainerStyle={styles.form}>
-        {/* Nome */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Nome</Text>
           <TextInput
@@ -54,40 +80,52 @@ export default function CadastrarImovel() {
           />
         </View>
 
-        {/* Tipo de imóvel */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Escolha o tipo de imóvel</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Clique aqui para escolher"
-            value={tipoImovel}
-            onChangeText={setTipoImovel}
-          />
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={tipoImovel}
+              onValueChange={(itemValue) => setTipoImovel(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Clique aqui para escolher" value="" />
+              <Picker.Item label="Residência" value="residencia" />
+              <Picker.Item label="Comércio" value="comercio" />
+              <Picker.Item label="Estabelecimento público" value="publico" />
+            </Picker>
+          </View>
         </View>
 
-        {/* Lixo reciclável */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Tem lixo reciclável para coleta?</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Clique aqui para escolher"
-            value={lixoReciclavel}
-            onChangeText={setLixoReciclavel}
-          />
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={lixoReciclavel}
+              onValueChange={(itemValue) => setLixoReciclavel(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Clique aqui para escolher" value="" />
+              <Picker.Item label="Sim" value="sim" />
+              <Picker.Item label="Não" value="nao" />
+            </Picker>
+          </View>
         </View>
 
-        {/* Localização */}
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Adicione a Localização</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite a localização do imóvel"
-            value={localizacao}
-            onChangeText={setLocalizacao}
-          />
+          <View style={styles.inputWithIcon}>
+            <TextInput
+              style={[styles.input, { flex: 1 }]}
+              placeholder="Digite a localização do imóvel"
+              value={localizacao}
+              onChangeText={setLocalizacao}
+            />
+            <TouchableOpacity onPress={obterLocalizacao} style={styles.iconButton}>
+              <Icon name="map-pin" size={20} color="#3629B7" />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Botão Criar */}
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Criar</Text>
         </TouchableOpacity>
@@ -109,6 +147,13 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 10,
+  },
+  image: {
+    width: 100,
+    height: 100,
+    alignSelf: 'center',
+    resizeMode: 'contain',
+    marginBottom: 10,
   },
   title: {
     fontSize: 28,
@@ -133,15 +178,39 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E0E0E0',
     borderRadius: 5,
-    paddingLeft: 15,
+    paddingHorizontal: 15,
     fontSize: 16,
     color: '#2F2F2F',
+  },
+  inputWithIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderLeftWidth: 0,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+    backgroundColor: '#F4F4F4',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
   },
   button: {
     backgroundColor: '#3629B7',
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: 'center',
+    marginTop: 10,
   },
   buttonText: {
     color: 'white',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import Icon from 'react-native-vector-icons/Feather'; // Para a seta verde
+import Icon from 'react-native-vector-icons/Feather'; 
 
 export default function TelaCriarSenha() {
   const router = useRouter();

@@ -6,7 +6,7 @@ export default function PaginaDeEntrada() {
 
   return (
     <View style={styles.container}>
-      {/* Imagem ilustrativa */}
+
       <Image
         source={require('../assets/images/pagina-decisao-inicial.png')}
         style={styles.image}

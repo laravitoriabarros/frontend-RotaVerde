@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/Feather';
 export default function Tutoriais() {
   const router = useRouter();
 
-  // Função para navegar para a tela "ver-tutorial"
   const handleTutorialClick = (tutorial: string) => {
     console.log(`Tutorial escolhido: ${tutorial}`);
     router.push('/Usuario/ver-tutorial'); 

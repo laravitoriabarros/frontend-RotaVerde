@@ -37,7 +37,7 @@ export default function Login() {
       {/* Título */}
       <Text style={styles.title}>Faça login para acessar o app</Text>
 
-      {/* Seletor de método de autenticação */}
+      {/* método de autenticação */}
       <Text style={styles.label}>Escolha um método de autenticação</Text>
       <View style={styles.pickerContainer}>
         <Picker
