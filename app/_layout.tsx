@@ -57,6 +57,7 @@ export default function RootLayout() {
   if (!isColorSchemeLoaded) return null;
 
   return (
+    <>
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
      <TanStackProvider>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
@@ -71,9 +72,10 @@ export default function RootLayout() {
           }}
         />
       </Stack>
-      <PortalHost />
     </TanStackProvider>
    </ThemeProvider>
+  <PortalHost />
+  </>
   );
 }
 
