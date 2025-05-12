@@ -1,19 +1,25 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function Login() {
   const router = useRouter();
   const [metodoAutenticacao, setMetodoAutenticacao] = useState('');
+  const [formaLogin, setFormaLogin] = useState('');
+  const [senha, setSenha] = useState('');
 
   const handleEntrar = () => {
-    if (metodoAutenticacao === 'CNPJ') {
-      // Não faz nada se for CNPJ
-      return;
-    } else if (metodoAutenticacao !== '') {
-      router.push('/Usuario/pagina-inicial');
+    if (!metodoAutenticacao || !formaLogin || !senha) {
+      // Se algum dos campos obrigatórios estiver vazio
+      Alert.alert('Erro', 'Todos os campos são obrigatórios!');
+    } else {
+      if (metodoAutenticacao === 'CNPJ') {
+        return;
+      } else if (metodoAutenticacao !== '') {
+        router.push('/Usuario/pagina-inicial');
+      }
     }
   };
 
@@ -27,17 +33,14 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-  
       <Image
         source={require('../assets/images/logo.png')}
         style={styles.image}
         resizeMode="contain"
       />
 
-      {/* Título */}
       <Text style={styles.title}>Faça login para acessar o app</Text>
 
-      {/* método de autenticação */}
       <Text style={styles.label}>Escolha um método de autenticação</Text>
       <View style={styles.pickerContainer}>
         <Picker
@@ -53,32 +56,34 @@ export default function Login() {
         </Picker>
       </View>
 
-      {/* Campo para digitar a forma de login */}
       <Text style={styles.label}>Digite sua forma de login</Text>
-      <TextInput style={styles.input} placeholder="Digite seu método de autenticação" />
+      <TextInput
+        style={styles.input}
+        placeholder="Digite seu método de autenticação"
+        value={formaLogin}
+        onChangeText={setFormaLogin}
+      />
 
-      {/* Campo senha */}
       <Text style={styles.label}>Senha</Text>
       <View style={styles.inputPasswordContainer}>
         <TextInput
           style={styles.inputPassword}
           placeholder="Digite sua senha aqui"
           secureTextEntry
+          value={senha}
+          onChangeText={setSenha}
         />
         <Icon name="eye-off" size={20} color="#999" />
       </View>
 
-      {/* Botão esqueci a senha */}
       <TouchableOpacity onPress={handleEsqueciSenha}>
         <Text style={styles.esqueciSenha}>Esqueci a senha</Text>
       </TouchableOpacity>
 
-      {/* Botão Entrar */}
       <TouchableOpacity style={styles.button} onPress={handleEntrar}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
-      {/* Link para cadastro */}
       <Text style={styles.naoTemConta}>
         Ainda não tem uma conta?{' '}
         <Text style={styles.cadastrarLink} onPress={handleCadastro}>

@@ -1,11 +1,31 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function CadastroUsuario() {
   const router = useRouter();
 
+  const [nome, setNome] = useState('');
+  const [usuario, setUsuario] = useState('');
+  const [metodoContato, setMetodoContato] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+
   const handleContinuar = () => {
+    // Verificando se todos os campos estão preenchidos
+    if (!nome || !usuario || !metodoContato || !senha || !confirmarSenha) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos!');
+      return;
+    }
+
+    // Verificando se as senhas coincidem
+    if (senha !== confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem!');
+      return;
+    }
+
+    
     router.push('/login');
   };
 
@@ -24,23 +44,50 @@ export default function CadastroUsuario() {
       />
 
       {/* Título */}
-      <Text style={styles.title}>Cadastre - se</Text>
+      <Text style={styles.title}>Cadastre-se</Text>
 
       {/* Campos de cadastro */}
       <Text style={styles.label}>Nome</Text>
-      <TextInput style={styles.input} placeholder="Digite seu nome..." />
+      <TextInput
+        style={styles.input}
+        placeholder="Digite seu nome..."
+        value={nome}
+        onChangeText={setNome}
+      />
 
       <Text style={styles.label}>Nome de Usuário</Text>
-      <TextInput style={styles.input} placeholder="Digite seu nome de usuário..." />
+      <TextInput
+        style={styles.input}
+        placeholder="Digite seu nome de usuário..."
+        value={usuario}
+        onChangeText={setUsuario}
+      />
 
       <Text style={styles.label}>Método de Contato</Text>
-      <TextInput style={styles.input} placeholder="Digite seu número ou email..." />
+      <TextInput
+        style={styles.input}
+        placeholder="Digite seu número ou email..."
+        value={metodoContato}
+        onChangeText={setMetodoContato}
+      />
 
       <Text style={styles.label}>Senha</Text>
-      <TextInput style={styles.input} placeholder="Digite sua senha" secureTextEntry />
+      <TextInput
+        style={styles.input}
+        placeholder="Digite sua senha"
+        secureTextEntry
+        value={senha}
+        onChangeText={setSenha}
+      />
 
       <Text style={styles.label}>Confirmar senha</Text>
-      <TextInput style={styles.input} placeholder="Confirme sua senha" secureTextEntry />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirme sua senha"
+        secureTextEntry
+        value={confirmarSenha}
+        onChangeText={setConfirmarSenha}
+      />
 
       {/* Botão Continuar */}
       <TouchableOpacity style={styles.button} onPress={handleContinuar}>

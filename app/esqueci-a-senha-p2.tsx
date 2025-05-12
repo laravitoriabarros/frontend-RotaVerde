@@ -1,15 +1,36 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Keyboard, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import Icon from 'react-native-vector-icons/Feather'; // Para a seta verde
+import Icon from 'react-native-vector-icons/Feather';
 
 export default function TelaVerificacao() {
   const router = useRouter();
   
-  // Tipagem para o estado 'code' que será um array de strings
   const [code, setCode] = useState<string[]>(["", "", "", ""]);
+  const [timer, setTimer] = useState(30); // Iniciar com 30 segundos
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  // Tipagem para os parâmetros text e index
+  useEffect(() => {
+    let interval: number | undefined; // Garantir que a variável é opcional inicialmente
+
+    if (isButtonDisabled && timer > 0) {
+      interval = window.setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (timer === 0) {
+      setIsButtonDisabled(false);
+      if (interval) { // Garantir que o intervalo foi definido
+        window.clearInterval(interval);
+      }
+    }
+
+    return () => {
+      if (interval) {
+        window.clearInterval(interval); // Limpar o intervalo ao sair do efeito
+      }
+    };
+  }, [isButtonDisabled, timer]);
+
   const handleChange = (text: string, index: number): void => {
     const newCode = [...code];
     newCode[index] = text;
@@ -18,15 +39,18 @@ export default function TelaVerificacao() {
 
   const handleSubmit = () => {
     if (code.join("").length === 4) {
-      router.push('/esqueci-a-senha-p3'); // Redireciona para a próxima tela
+      router.push('/esqueci-a-senha-p3');
     } else {
       Alert.alert("Por favor, insira o código completo.");
     }
   };
 
   const handleReenviar = () => {
-    // Aqui você pode adicionar a lógica para reenviar o código
-    Alert.alert("Código reenviado!");
+    if (!isButtonDisabled) {
+      setIsButtonDisabled(true); // Desabilitar o botão
+      setTimer(30); // Reiniciar o cronômetro
+      Alert.alert("Código reenviado!");
+    }
   };
 
   return (
@@ -52,14 +76,16 @@ export default function TelaVerificacao() {
         ))}
       </View>
 
-      <TouchableOpacity onPress={handleReenviar}>
-        <Text style={styles.reenviarText}>Não recebeu o código? Reenviar Código</Text>
+      <TouchableOpacity onPress={handleReenviar} disabled={isButtonDisabled}>
+        <Text style={[styles.reenviarText, isButtonDisabled && styles.disabledText]}>
+          {isButtonDisabled ? `Reenviar Código (${timer}s)` : 'Não recebeu o código? Reenviar Código'}
+        </Text>
       </TouchableOpacity>
 
       <Text style={styles.pageIndicator}>1 de 2</Text>
 
       <View style={styles.progressBar}>
-        <View style={[styles.progress, { width: '50%' }]} />
+        <View style={[styles.progress, { width: `${(30 - timer) / 30 * 100}%` }]} />
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
@@ -113,6 +139,9 @@ const styles = StyleSheet.create({
     color: '#3629B7',
     fontSize: 14,
     marginBottom: 20,
+  },
+  disabledText: {
+    color: 'gray',
   },
   pageIndicator: {
     fontSize: 12,
