@@ -1,7 +1,8 @@
-import { Href, RelativePathString, useRouter } from "expo-router";
-import { Clock, HomeIcon, Map, Mic, User } from "lucide-react-native";
+import { Href, useRouter } from "expo-router";
+import { Mic } from "lucide-react-native";
 import {  Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Card } from "~/components/ui/card";
+import { CooperativaMenuBar } from "../../../components/cooperativa/cooperativa-menu-bar";
 
 export default function Home() {
     const router = useRouter()
@@ -84,37 +85,7 @@ export default function Home() {
                 </View>
               </Card>
              </TouchableOpacity>
-
-
-             <View className="flex flex-row justify-around pb-5 absolute left-0 right-0 bottom-0 border-t-[1px] border-[#E0E0E0]">
-               <TouchableOpacity
-                 className="p-2.5"
-                 onPress={() => handleNavigate('/cooperativa/home')}
-               >
-                 <HomeIcon size={30} color={'#2F2F2F'}/>
-               </TouchableOpacity>
-
-               <TouchableOpacity
-                 className="p-2.5"
-                 onPress={() => handleNavigate('/')}
-               >
-                 <Map size={30} color="#2F2F2F" />
-               </TouchableOpacity>
-
-               <TouchableOpacity
-                 className="p-2.5"
-                 onPress={() => handleNavigate('/')}
-               >
-                <Clock size={30} color={'#2F2F2F'}/>
-               </TouchableOpacity>
-
-               <TouchableOpacity
-                 className="p-2.5"
-                 onPress={() => handleNavigate('/')}
-               >
-                <User size={30} color={'#2F2F2F'}/>
-               </TouchableOpacity>
-             </View>
+            <CooperativaMenuBar />
            </View>
     )
 }
