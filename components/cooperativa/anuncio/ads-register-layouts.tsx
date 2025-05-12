@@ -9,7 +9,7 @@ export const RegisterAdFirstStep = ({ children }: RegisterAdFirstStepProps) => {
   return (
  <View className='flex'>
     <Image
-      source={require('../../../../../assets/images/cadastro-01.png')}
+      source={require('../../../assets/images/cadastro-01.png')}
       className='w-48 h-48 my-5 self-center'
       resizeMode="contain"
     />

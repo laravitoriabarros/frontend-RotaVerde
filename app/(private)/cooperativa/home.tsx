@@ -51,7 +51,7 @@ export default function Home() {
                  </TouchableOpacity>
                  <TouchableOpacity
                    className="py-2.5 px-5 bg-[#3629B7] rounded-[5px]"
-                   onPress={() => handleNavigate('/cooperativa/anuncio/cadastro')}
+                   onPress={() => handleNavigate('/')}
                  >
                    <Text className="font-bold text-white">Criar</Text>
                  </TouchableOpacity>
@@ -78,7 +78,7 @@ export default function Home() {
                     </TouchableOpacity>
                     <TouchableOpacity
                     className="py-2.5 px-5 bg-[#3629B7] rounded-[5px]"
-                    onPress={() => handleNavigate('/')}
+                    onPress={() => handleNavigate('/cooperativa/anuncio/cadastro')}
                     >
                     <Text className="font-bold text-white">Cadastrar</Text>
                     </TouchableOpacity>
