@@ -1,11 +1,6 @@
 import { z } from "zod";
 
 export const loginFormSchema = z.object({
-    phone: z.string({
-        required_error: 'Telefone é obrigatório.'
-    })
-    .min(14, 'Telefone deve ter no mínimo 10 dígitos.')
-    .nonempty('Telefone é obrigatório.'),
     email: z.string({
         required_error: 'E-mail é obrigatório.'
     }).email('E-mail inválido.'),
