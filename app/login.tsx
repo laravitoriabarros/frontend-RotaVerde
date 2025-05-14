@@ -4,12 +4,19 @@ import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
-import { maskInputPhone } from '~/utils/masks';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { loginFormSchema } from '~/services/auth/login-service';
 
 export default function Login() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const { control, handleSubmit, formState: { errors }} = useForm();
+  const { control, handleSubmit, formState: { errors }} = useForm({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      email: '',
+      password: ''
+    }
+  })
 
   const handleLogin = () => {
     router.push('/Usuario/pagina-inicial');
@@ -35,30 +42,8 @@ export default function Login() {
         resizeMode="contain"
       />
 
-      {/* Título */}
       <Text className='text-2xl font-bold text-[##005A53] text-center mb-8'>Faça login para acessar o app</Text>
 
-      {/* Método de autenticação */}
-      <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Digite seu telefone</Text>
-      <Controller
-        control={control}
-        name="phone"
-        render={({ field: { onChange, value, onBlur, ...field } }) => (
-          <TextInput className='border border-gray-300 rounded-lg p-4 mb-4' placeholder="Digite seu telefone"
-          value={value}
-          onChangeText={(value: string) => {
-            const phone = maskInputPhone(value)
-            onChange(phone)
-          }}
-          onBlur={onBlur}
-          />
-        )}
-      />
-      {errors.phone && (
-          <Text className="text-xs mb-4 text-red-500">{errors.phone?.message as string}</Text>
-      )}
-
-      {/* Campo - Login */}
       <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Digite seu e-mail</Text>
       <Controller
         control={control}
@@ -75,7 +60,6 @@ export default function Login() {
           <Text className="text-xs mb-4 text-red-500">{errors.email?.message as string}</Text>
       )}
 
-      {/* Campo senha */}
       <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Senha</Text>
       <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
         <Controller
