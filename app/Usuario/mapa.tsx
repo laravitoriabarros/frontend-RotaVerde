@@ -3,10 +3,30 @@ import React from 'react';
 import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/Feather';
+import CooperativaModal, { Cooperativa } from './CooperativaModal';
 
 export default function TelaMapa() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = React.useState(false);
+  const [modalCooperativaVisible, setModalCooperativaVisible] = React.useState(false);
+  const [selectedCooperativa, setSelectedCooperativa] = React.useState<Cooperativa | null>(null);
+
+  // Mock cooperativas data (pretend this comes from backend)
+  const cooperativas = [
+    {
+      id: 1,
+      nome: 'Cooperativa Verde',
+      areaDeInfluencia: ['Jatiúca', 'Ponta Verde'],
+      localizacao: {
+        endereco: 'Av. Dr. Antônio Gomes de Barros, 970 - Jatiúca, Maceió - AL, 57036-000',
+        latitude: -9.648846, // Approximate coordinates for the address
+        longitude: -35.708377,
+      },
+      materiaisReciclaveis: ['latinhas', 'garrafas pet', 'papel'],
+      image: require('../../assets/images/perfil-roxo-homem.png'),
+    },
+    // Adicione mais cooperativas aqui no futuro
+  ];
 
   const handleNavigate = () => {
     setModalVisible(true);
@@ -47,6 +67,15 @@ export default function TelaMapa() {
         </View>
       </Modal>
 
+      <CooperativaModal
+        visible={modalCooperativaVisible}
+        onClose={() => {
+          setModalCooperativaVisible(false);
+          setSelectedCooperativa(null);
+        }}
+        cooperativa={selectedCooperativa}
+      />
+
       {/* Mapa real */}
       {/* TODO: initial region vai ser a localização do imóvel selecionado */}
       <MapView
@@ -59,12 +88,31 @@ export default function TelaMapa() {
         }}
         provider="google"
       >
+        {/* User's property marker */}
         <Marker
           coordinate={{ latitude: -9.6498487, longitude: -35.7089492 }}
           title="Maceió"
           description="Maceió, Alagoas"
           onPress={handleNavigate}
         />
+        {/* Cooperativa marker (green) */}
+        {cooperativas.map((coop) => (
+          <Marker
+            key={coop.id}
+            coordinate={{
+              latitude: coop.localizacao.latitude,
+              longitude: coop.localizacao.longitude,
+            }}
+            pinColor="#4EC063" // Green color
+            title={coop.nome}
+            description={`Área de influência: ${coop.areaDeInfluencia.join(', ')}`}
+            onPress={() => {
+              const found = cooperativas.find(c => c.id === coop.id) || null;
+              setSelectedCooperativa(found);
+              setModalCooperativaVisible(true);
+            }}
+          />
+        ))}
       </MapView>
 
       {/* Barra Inferior */}

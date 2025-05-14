@@ -2,26 +2,16 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
-import { loginFormData, loginFormSchema } from '~/services/auth/login-service';
 import { maskInputPhone } from '~/utils/masks';
 
 export default function Login() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const { control, handleSubmit, formState: { errors }} = useForm({
-    resolver: zodResolver(loginFormSchema),
-    defaultValues: {
-      phone: '',
-      email: '',
-      password: ''
-    }
-  })
+  const { control, handleSubmit, formState: { errors }} = useForm();
 
-  const handleLogin = (data: loginFormData) => {
-    console.log(data);
+  const handleLogin = () => {
     router.push('/Usuario/pagina-inicial');
   }
 
@@ -65,7 +55,7 @@ export default function Login() {
         )}
       />
       {errors.phone && (
-          <Text className="text-xs mb-4 text-red-500">{errors.phone.message}</Text>
+          <Text className="text-xs mb-4 text-red-500">{errors.phone?.message as string}</Text>
       )}
 
       {/* Campo - Login */}
@@ -82,7 +72,7 @@ export default function Login() {
         )}
       />
       {errors.email && (
-          <Text className="text-xs mb-4 text-red-500">{errors.email.message}</Text>
+          <Text className="text-xs mb-4 text-red-500">{errors.email?.message as string}</Text>
       )}
 
       {/* Campo senha */}
@@ -119,7 +109,7 @@ export default function Login() {
         </TouchableOpacity>
       </View>
       {errors.password && (
-          <Text className="text-xs mb-4 text-red-500">{errors.password.message}</Text>
+          <Text className="text-xs mb-4 text-red-500">{errors.password?.message as string}</Text>
       )}
 
       {/* Botão esqueci a senha */}
@@ -129,7 +119,7 @@ export default function Login() {
 
       {/* Botão Entrar */}
       <TouchableOpacity className='bg-[#4EC063] py-3.5 items-center rounded-3xl'
-        onPress={handleSubmit(handleLogin)}
+        onPress={handleLogin}
        >
         <Text className='text-white font-bold text-base'>Entrar</Text>
       </TouchableOpacity>
