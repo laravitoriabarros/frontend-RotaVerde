@@ -1,11 +1,11 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { loginFormData, loginFormSchema } from '~/services/auth/login-service';
-import { zodResolver } from '@hookform/resolvers/zod'
 import { maskInputPhone } from '~/utils/masks';
 
 export default function Login() {
@@ -22,6 +22,7 @@ export default function Login() {
 
   const handleLogin = (data: loginFormData) => {
     console.log(data);
+    router.push('/Usuario/pagina-inicial');
   }
 
   const handleRedirectAfterLogin = () => {
