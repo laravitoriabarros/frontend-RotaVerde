@@ -68,7 +68,7 @@ export default function PaginaInicial() {
         <View style={styles.cardButtons}>
           <TouchableOpacity
             style={styles.buttonSecondary}
-            onPress={() => handleNavigate('Usuario/ver-imovel')}  
+            onPress={() => handleNavigate('Usuario/confirmacao-coleta')}  
           >
             <Text style={styles.buttonText}>Confirmar Coleta</Text>
           </TouchableOpacity>

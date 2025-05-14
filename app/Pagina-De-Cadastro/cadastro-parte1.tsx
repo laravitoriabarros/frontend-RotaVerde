@@ -14,6 +14,8 @@ export default function CadastroParte1() {
       router.push('/Pagina-De-Cadastro/cadastro-usuario');
     } else if (identidade === 'cooperativa') {
       router.push('/Pagina-De-Cadastro/cadastro-cooperativa');
+    } else if (identidade === 'motorista') {
+      router.push('/Pagina-De-Cadastro/cadastro-motorista'); 
     } else {
       alert('Por favor, selecione como você se identifica.');
     }
@@ -59,6 +61,7 @@ export default function CadastroParte1() {
           <Picker.Item label="Clique aqui para escolher" value="" />
           <Picker.Item label="Cidadão" value="cidadao" />
           <Picker.Item label="Representante de cooperativa" value="cooperativa" />
+          <Picker.Item label="Motorista" value="motorista" />
         </Picker>
       </View>
 
