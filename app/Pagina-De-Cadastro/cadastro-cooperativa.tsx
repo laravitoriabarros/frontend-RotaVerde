@@ -1,6 +1,6 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import Icon from 'react-native-vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
 
@@ -8,8 +8,29 @@ export default function CadastroCooperativa() {
   const router = useRouter();
   const [areaAtuacao, setAreaAtuacao] = useState('');
   const [outros, setOutros] = useState('');
+  const [cnpj, setCnpj] = useState('');
+  const [nomeCooperativa, setNomeCooperativa] = useState('');
+  const [metodoContato, setMetodoContato] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [cep, setCep] = useState('');
+  const [rua, setRua] = useState('');
+  const [bairro, setBairro] = useState('');
+  const [numero, setNumero] = useState('');
 
   const handleFinalizar = () => {
+    // Verificando se todos os campos obrigatórios estão preenchidos
+    if (!cnpj || !nomeCooperativa || !metodoContato || !senha || !confirmarSenha || !cep || !rua || !bairro || !numero || !areaAtuacao) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos obrigatórios!');
+      return;
+    }
+
+    // Verificando se as senhas coincidem
+    if (senha !== confirmarSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem!');
+      return;
+    }
+
     router.push('/login');
   };
 
@@ -29,25 +50,52 @@ export default function CadastroCooperativa() {
         />
 
         {/* Título */}
-        <Text style={styles.title}>Cadastre - se</Text>
+        <Text style={styles.title}>Cadastre-se</Text>
 
-        {/* Inputs */}
+        {/* Campos de cadastro */}
         <Text style={styles.label}>CNPJ</Text>
-        <TextInput style={styles.input} placeholder="Digite aqui seu CNPJ [SEM PONTUAÇÃO]" />
+        <TextInput
+          style={styles.input}
+          placeholder="Digite aqui seu CNPJ [SEM PONTUAÇÃO]"
+          value={cnpj}
+          onChangeText={setCnpj}
+        />
 
         <Text style={styles.label}>Nome da Cooperativa</Text>
-        <TextInput style={styles.input} placeholder="Digite o nome da cooperativa..." />
+        <TextInput
+          style={styles.input}
+          placeholder="Digite o nome da cooperativa..."
+          value={nomeCooperativa}
+          onChangeText={setNomeCooperativa}
+        />
 
         <Text style={styles.label}>Método de Contato</Text>
-        <TextInput style={styles.input} placeholder="Digite seu número ou email..." />
+        <TextInput
+          style={styles.input}
+          placeholder="Digite seu número ou email..."
+          value={metodoContato}
+          onChangeText={setMetodoContato}
+        />
 
         <Text style={styles.label}>Senha</Text>
-        <TextInput style={styles.input} placeholder="Digite sua senha" secureTextEntry />
+        <TextInput
+          style={styles.input}
+          placeholder="Digite sua senha"
+          secureTextEntry
+          value={senha}
+          onChangeText={setSenha}
+        />
 
         <Text style={styles.label}>Confirmar senha</Text>
-        <TextInput style={styles.input} placeholder="Confirme sua senha" secureTextEntry />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirme sua senha"
+          secureTextEntry
+          value={confirmarSenha}
+          onChangeText={setConfirmarSenha}
+        />
 
-        {/* Picker Área de Atuação */}
+        {/* Área de Atuação */}
         <Text style={styles.label}>Selecione suas áreas de atuação</Text>
         <View style={styles.pickerContainer}>
           <Picker
@@ -81,16 +129,36 @@ export default function CadastroCooperativa() {
         <Text style={styles.sectionTitle}>Informações de endereço</Text>
 
         <Text style={styles.label}>CEP</Text>
-        <TextInput style={styles.input} placeholder="Insira o CEP" />
+        <TextInput
+          style={styles.input}
+          placeholder="Insira o CEP"
+          value={cep}
+          onChangeText={setCep}
+        />
 
         <Text style={styles.label}>Rua</Text>
-        <TextInput style={styles.input} placeholder="Digite a rua do endereço" />
+        <TextInput
+          style={styles.input}
+          placeholder="Digite a rua do endereço"
+          value={rua}
+          onChangeText={setRua}
+        />
 
         <Text style={styles.label}>Bairro</Text>
-        <TextInput style={styles.input} placeholder="Digite o bairro do endereço" />
+        <TextInput
+          style={styles.input}
+          placeholder="Digite o bairro do endereço"
+          value={bairro}
+          onChangeText={setBairro}
+        />
 
         <Text style={styles.label}>Número do Endereço</Text>
-        <TextInput style={styles.input} placeholder="Digite o número do endereço" />
+        <TextInput
+          style={styles.input}
+          placeholder="Digite o número do endereço"
+          value={numero}
+          onChangeText={setNumero}
+        />
 
         {/* Botão Finalizar */}
         <TouchableOpacity style={styles.button} onPress={handleFinalizar}>
