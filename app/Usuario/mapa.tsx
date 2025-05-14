@@ -1,14 +1,15 @@
+import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
-import { useRouter } from 'expo-router'; 
-import Icon from 'react-native-vector-icons/Feather'; 
+import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import Icon from 'react-native-vector-icons/Feather';
 
 export default function TelaMapa() {
   const router = useRouter();
+  const [modalVisible, setModalVisible] = React.useState(false);
 
-  
   const handleNavigate = () => {
-    router.push('/Usuario/mapa-02'); 
+    setModalVisible(true);
   };
 
   return (
@@ -18,18 +19,53 @@ export default function TelaMapa() {
         <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
       </View>
 
-      {/* Mapa com área clicável (parte verde) */}
-      <ImageBackground
-        source={require('../../assets/images/mapa-01.png')} 
-        style={styles.map}
-        resizeMode="cover"
+      {/* Modal for property info */}
+      <Modal
+        visible={modalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
       >
-        {/* Área clicável sobre a parte verde */}
-        <TouchableOpacity
-          style={styles.greenArea} // preciso mudar isso, ta meio bugado
-          onPress={handleNavigate} 
+        <View style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0,0,0,0.5)'
+        }}>
+          <View style={{
+            backgroundColor: 'white',
+            padding: 20,
+            borderRadius: 10,
+            minWidth: 250,
+            alignItems: 'center'
+          }}>
+            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Imóvel Selecionado</Text>
+            <Text>Maceió, Alagoas</Text>
+            {/* Add more property info here if you want */}
+            <Button title="Fechar" onPress={() => setModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Mapa real */}
+      {/* TODO: initial region vai ser a localização do imóvel selecionado */}
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: -9.6498487,
+          longitude: -35.7089492,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        provider="google"
+      >
+        <Marker
+          coordinate={{ latitude: -9.6498487, longitude: -35.7089492 }}
+          title="Maceió"
+          description="Maceió, Alagoas"
+          onPress={handleNavigate}
         />
-      </ImageBackground>
+      </MapView>
 
       {/* Barra Inferior */}
       <View style={styles.navBar}>
