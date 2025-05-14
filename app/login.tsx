@@ -1,174 +1,145 @@
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Picker } from '@react-native-picker/picker';
-import Icon from 'react-native-vector-icons/Feather';
+
+import { Eye, EyeOff } from 'lucide-react-native';
+import { Controller, useForm } from 'react-hook-form';
+import { loginFormData, loginFormSchema } from '~/services/auth/login-service';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { maskInputPhone } from '~/utils/masks';
 
 export default function Login() {
   const router = useRouter();
-  const [metodoAutenticacao, setMetodoAutenticacao] = useState('');
-
-  const handleEntrar = () => {
-    if (metodoAutenticacao === 'CNPJ') {
-      // Não faz nada se for CNPJ
-      return;
-    } else if (metodoAutenticacao !== '') {
-      router.push('/Usuario/pagina-inicial');
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const { control, handleSubmit, formState: { errors }} = useForm({
+    resolver: zodResolver(loginFormSchema),
+    defaultValues: {
+      phone: '',
+      email: '',
+      password: ''
     }
+  })
+
+  const handleLogin = (data: loginFormData) => {
+    console.log(data);
+  }
+
+  const handleRedirectAfterLogin = () => {
+    console.log('vai redirecionar');
   };
 
-  const handleEsqueciSenha = () => {
+  const redirectToForgotPassword = () => {
     router.push('/esqueci-a-senha-p1');
   };
 
-  const handleCadastro = () => {
+  const redirectToRegister = () => {
     router.push('/Pagina-De-Cadastro/cadastro-parte1');
   };
 
   return (
-    <View style={styles.container}>
-  
+    <View className="flex bg-white px-5 pt-20">
       <Image
         source={require('../assets/images/logo.png')}
-        style={styles.image}
+        className='w-full h-32 mb-5'
         resizeMode="contain"
       />
 
       {/* Título */}
-      <Text style={styles.title}>Faça login para acessar o app</Text>
+      <Text className='text-2xl font-bold text-[##005A53] text-center mb-8'>Faça login para acessar o app</Text>
 
-      {/* método de autenticação */}
-      <Text style={styles.label}>Escolha um método de autenticação</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={metodoAutenticacao}
-          onValueChange={(itemValue) => setMetodoAutenticacao(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Clique aqui para escolher" value="" />
-          <Picker.Item label="CNPJ" value="CNPJ" />
-          <Picker.Item label="Nome de usuário" value="NomeUsuario" />
-          <Picker.Item label="E-mail" value="Email" />
-          <Picker.Item label="Número de celular" value="NumeroCelular" />
-        </Picker>
-      </View>
+      {/* Método de autenticação */}
+      <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Digite seu telefone</Text>
+      <Controller
+        control={control}
+        name="phone"
+        render={({ field: { onChange, value, onBlur, ...field } }) => (
+          <TextInput className='border border-gray-300 rounded-lg p-4 mb-4' placeholder="Digite seu telefone"
+          value={value}
+          onChangeText={(value: string) => {
+            const phone = maskInputPhone(value)
+            onChange(phone)
+          }}
+          onBlur={onBlur}
+          />
+        )}
+      />
+      {errors.phone && (
+          <Text className="text-xs mb-4 text-red-500">{errors.phone.message}</Text>
+      )}
 
-      {/* Campo para digitar a forma de login */}
-      <Text style={styles.label}>Digite sua forma de login</Text>
-      <TextInput style={styles.input} placeholder="Digite seu método de autenticação" />
+      {/* Campo - Login */}
+      <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Digite seu e-mail</Text>
+      <Controller
+        control={control}
+        name="email"
+        render={({ field: { onChange, value, onBlur, ...field } }) => (
+          <TextInput className='border border-gray-300 rounded-lg p-4 mb-4' placeholder="Digite seu método de autenticação"
+          value={value}
+          onChangeText={onChange}
+          onBlur={onBlur}
+          />
+        )}
+      />
+      {errors.email && (
+          <Text className="text-xs mb-4 text-red-500">{errors.email.message}</Text>
+      )}
 
       {/* Campo senha */}
-      <Text style={styles.label}>Senha</Text>
-      <View style={styles.inputPasswordContainer}>
-        <TextInput
-          style={styles.inputPassword}
-          placeholder="Digite sua senha aqui"
-          secureTextEntry
+      <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Senha</Text>
+      <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
+        <Controller
+          control={control}
+          name='password'
+          render={({ field: { onChange, value, onBlur, ...field }}) => (
+            <TextInput
+              className='flex-1 h-[50px]'
+              placeholder="Digite sua senha aqui"
+              secureTextEntry={!showPassword}
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
         />
-        <Icon name="eye-off" size={20} color="#999" />
+        <TouchableOpacity
+          onPress={() => {
+            setShowPassword(() => !showPassword)
+          }}
+          >
+          {showPassword ? (
+            <>
+              <EyeOff size={20} color="#999" />
+            </>
+          ) : (
+            <>
+              <Eye size={20} color="#999" />
+            </>
+          )}
+        </TouchableOpacity>
       </View>
+      {errors.password && (
+          <Text className="text-xs mb-4 text-red-500">{errors.password.message}</Text>
+      )}
 
       {/* Botão esqueci a senha */}
-      <TouchableOpacity onPress={handleEsqueciSenha}>
-        <Text style={styles.esqueciSenha}>Esqueci a senha</Text>
+      <TouchableOpacity onPress={redirectToForgotPassword}>
+        <Text className='text-right text-gray-500 text-sm mb-8'>Esqueci a senha</Text>
       </TouchableOpacity>
 
       {/* Botão Entrar */}
-      <TouchableOpacity style={styles.button} onPress={handleEntrar}>
-        <Text style={styles.buttonText}>Entrar</Text>
+      <TouchableOpacity className='bg-[#4EC063] py-3.5 items-center rounded-3xl'
+        onPress={handleSubmit(handleLogin)}
+       >
+        <Text className='text-white font-bold text-base'>Entrar</Text>
       </TouchableOpacity>
 
       {/* Link para cadastro */}
-      <Text style={styles.naoTemConta}>
+      <Text className='text-center text-gray-500 text-sm'>
         Ainda não tem uma conta?{' '}
-        <Text style={styles.cadastrarLink} onPress={handleCadastro}>
+        <Text className='text-[#4EC063] font-bold' onPress={redirectToRegister}>
           Clique aqui para se cadastrar
         </Text>
       </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 20,
-    paddingTop: 80,
-  },
-  image: {
-    width: '100%',
-    height: 120,
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#005A53',
-    textAlign: 'center',
-    marginBottom: 30,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 5,
-    color: '#333',
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: '#D3D3D3',
-    borderRadius: 8,
-    marginBottom: 15,
-  },
-  picker: {
-    height: 50,
-    width: '100%',
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: '#D3D3D3',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 15,
-  },
-  inputPasswordContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#D3D3D3',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    marginBottom: 10,
-  },
-  inputPassword: {
-    flex: 1,
-    height: 50,
-  },
-  esqueciSenha: {
-    textAlign: 'right',
-    color: '#666',
-    marginBottom: 30,
-    fontSize: 13,
-  },
-  button: {
-    backgroundColor: '#4EC063',
-    paddingVertical: 15,
-    borderRadius: 30,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  naoTemConta: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: 13,
-  },
-  cadastrarLink: {
-    color: '#4EC063',
-    fontWeight: 'bold',
-  },
-});

@@ -19,7 +19,6 @@ export default function VerImovel() {
   const [nome, setNome] = useState('Casa 01');
   const [tipo, setTipo] = useState('Residencial');
   const [endereco, setEndereco] = useState('Antares - Rua Sol');
-  const [coletaHoje, setColetaHoje] = useState('Sim');
   const [lixoHoje, setLixoHoje] = useState('Sim');
 
   const handleGoBack = () => {
@@ -104,24 +103,7 @@ export default function VerImovel() {
           <Text style={styles.dividerText}>Informações de Hoje</Text>
         </View>
 
-        <View style={styles.dropdownContainer}>
-          <Text style={styles.label}>A coleta de hoje foi realizada com sucesso?</Text>
-          <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={coletaHoje}
-              onValueChange={modoEdicao ? () => {} : setColetaHoje}
-              style={styles.picker}
-              enabled={!modoEdicao}
-            >
-              <Picker.Item label="Sim" value="Sim" />
-              <Picker.Item label="Não" value="Não" />
-            </Picker>
-          </View>
-          <TouchableOpacity style={styles.smallButton} onPress={salvarPopup} disabled={modoEdicao}>
-            <Text style={styles.smallButtonText}>Salvar</Text>
-          </TouchableOpacity>
-        </View>
-
+        {/* Removido a parte de coleta de lixo */}
         <View style={styles.dropdownContainer}>
           <Text style={styles.label}>Hoje tem lixo reciclável para coleta?</Text>
           <View style={styles.pickerWrapper}>

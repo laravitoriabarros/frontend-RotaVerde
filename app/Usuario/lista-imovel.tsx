@@ -59,6 +59,10 @@ export default function MeusImoveis() {
     router.push('/Usuario/cadastrar-imovel');
   };
 
+  const handleCardClick = (id: number) => {
+    router.push(`/Usuario/ver-imovel`);
+  };
+
   return (
     <View style={styles.container}>
       {/* Cabeçalho */}
@@ -80,8 +84,8 @@ export default function MeusImoveis() {
               styles.card,
               modoExclusao && selecionados.includes(imovel.id) && styles.cardSelecionado,
             ]}
-            onPress={() => modoExclusao && toggleSelecionado(imovel.id)}
-            disabled={!modoExclusao}
+            onPress={() => handleCardClick(imovel.id)} // Enviando para a tela de detalhes
+            disabled={modoExclusao}
           >
             <View style={styles.cardContent}>
               <Icon name="home" size={30} color="#4EC063" />
