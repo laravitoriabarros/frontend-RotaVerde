@@ -1,97 +1,181 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router'; 
-import Icon from 'react-native-vector-icons/Feather'; 
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import { tutorialContent } from './util/tutorialContent';
 
 export default function Tutoriais() {
   const router = useRouter();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedMaterial, setSelectedMaterial] = useState('');
 
-  const handleTutorialClick = (tutorial: string) => {
-    console.log(`Tutorial escolhido: ${tutorial}`);
-    router.push('/Usuario/ver-tutorial'); 
+  const handleMaterialClick = (material: string) => {
+    setSelectedMaterial(material);
+    setModalVisible(true);
   };
 
-  
-  const handleNext = () => {
-    router.push('/perfil'); 
+  const renderModalContent = () => {
+    const content = tutorialContent[selectedMaterial];
+    if (!content) return null;
+
+    const renderText = (item: string | { text: string; style: any }, index: number) => {
+      if (typeof item === 'string') {
+        return <Text key={index} style={styles.modalListItem}>• {item}</Text>;
+      }
+      return <Text key={index} style={[styles.modalListItem, item.style]}>• {item.text}</Text>;
+    };
+
+    return (
+      <View style={styles.modalContentContainer}>
+        <View style={styles.modalSection}>
+          <Text style={styles.modalSectionTitle}>Separação</Text>
+          <View style={styles.separacaoContainer}>
+            <View style={styles.separacaoColumn}>
+              <Text style={styles.separacaoTitleGreen}>Pode:</Text>
+              {content.content.separacao.pode.map((item, index) => (
+                <Text key={index} style={styles.separacaoItemGreen}>• {item}</Text>
+              ))}
+            </View>
+            <View style={styles.separacaoColumn}>
+              <Text style={styles.separacaoTitleRed}>Não pode:</Text>
+              {content.content.separacao.naoPode.map((item, index) => (
+                <Text key={index} style={styles.separacaoItemRed}>• {item}</Text>
+              ))}
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.modalSection}>
+          <Text style={styles.modalSectionTitle}>Limpeza</Text>
+          {content.content.limpeza.map((item, index) => (
+            renderText(item, index)
+          ))}
+        </View>
+
+        <View style={styles.modalSection}>
+          <Text style={styles.modalSectionTitle}>Preparação</Text>
+          {content.content.preparacao.map((item, index) => (
+            renderText(item, index)
+          ))}
+        </View>
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
-  
-      <Image
-        source={require('../../assets/images/jogando-lixo.png')} 
-        style={styles.image}
-      />
-
-      {/* Título */}
-      <Text style={styles.title}>Vamos Aprender!</Text>
-      <Text style={styles.subtitle}>Clique em qual tutorial você quer ver!</Text>
-
-      {/* ScrollView para permitir rolar até o final */}
       <ScrollView contentContainerStyle={styles.scrollView}>
-        {/* Cards de opções de tutorial */}
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => handleTutorialClick('Como separar o lixo')}
-        >
-          <Text style={styles.cardTitle}>Como separar o lixo</Text>
-          <Text style={styles.cardDescription}>Aprenda a facilitar sua coleta!</Text>
-        </TouchableOpacity>
+        <Text style={styles.h1}>Como participar da coleta seletiva?</Text>
 
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => handleTutorialClick('Como separar lixo orgânico')}
-        >
-          <Text style={styles.cardTitle}>Como separar lixo orgânico</Text>
-          <Text style={styles.cardDescription}>É mais fácil do que parece!</Text>
-        </TouchableOpacity>
+        <Text style={styles.h3}>
+          Tudo o que você precisa saber para separar, preparar e entregar seus recicláveis corretamente.
+        </Text>
 
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => handleTutorialClick('Como lidar com vidro')}
-        >
-          <Text style={styles.cardTitle}>Como lidar com vidro</Text>
-          <Text style={styles.cardDescription}>Cuidado para não machucar quem recolhe!</Text>
-        </TouchableOpacity>
+        <View style={styles.divider} />
 
-        <TouchableOpacity
-          style={styles.card}
-          onPress={() => handleTutorialClick('O que é material reciclável')}
-        >
-          <Text style={styles.cardTitle}>O que é material reciclável</Text>
-          <Text style={styles.cardDescription}>Descubra tudo!</Text>
-        </TouchableOpacity>
+        <Text style={styles.h1}>Por que reciclar?</Text>
+
+        <View style={styles.listContainer}>
+          <Text style={styles.listItem}>
+            • Protege o meio ambiente - Reduzimos a quantidade de lixo nos aterros e evitamos a poluição do solo, da água e do ar.
+          </Text>
+          <Text style={styles.listItem}>
+            • Damos uma nova vida aos materiais - Materiais recicláveis podem virar novos produtos, economizando energia e recursos naturais como água e petróleo.
+          </Text>
+          <Text style={styles.listItem}>
+            • Apoiamos o trabalho das cooperativas - Você fortalece o sustento de centenas de famílias que vivem da reciclagem, promovendo inclusão social e dignidade.
+          </Text>
+          <Text style={styles.listItem}>
+            • Cuidamos do futuro - Cada embalagem reciclada hoje ajuda a construir um planeta mais limpo e equilibrado para as próximas gerações.
+          </Text>
+        </View>
+
+        <Text style={styles.h1}>Como separar e tratar os materiais?</Text>
+
+        <View style={styles.materialButtonsContainer}>
+          <TouchableOpacity
+            style={[styles.materialButton, { backgroundColor: '#E31B1B' }]}
+            onPress={() => handleMaterialClick('plastico')}
+          >
+            <Text style={styles.materialButtonText}>Plástico</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.materialButton, { backgroundColor: '#F9C534' }]}
+            onPress={() => handleMaterialClick('metal')}
+          >
+            <Text style={styles.materialButtonText}>Metal</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.materialButton, { backgroundColor: '#4EC063' }]}
+            onPress={() => handleMaterialClick('vidro')}
+          >
+            <Text style={styles.materialButtonText}>Vidro</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.materialButton, { backgroundColor: '#3629B7' }]}
+            onPress={() => handleMaterialClick('papel')}
+          >
+            <Text style={styles.materialButtonText}>Papel</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
-      {/* Botão "Próximo" */}
-      <TouchableOpacity style={styles.button} onPress={handleNext}>
-        <Text style={styles.buttonText}>Próximo</Text>
-      </TouchableOpacity>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.closeButtonText}>x</Text>
+            </TouchableOpacity>
+            {selectedMaterial && (
+              <ScrollView style={styles.modalScrollView} showsVerticalScrollIndicator={false}>
+                <View style={styles.staticContent}>
+                  <View style={styles.imageContainer}>
+                    <Image source={tutorialContent[selectedMaterial].image} style={styles.modalImage} />
+                  </View>
+                  <View style={styles.darkenedBackground} />
+                </View>
+                <Text style={styles.modalTitle}>{tutorialContent[selectedMaterial].title}</Text>
+                {renderModalContent()}
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      </Modal>
 
       {/* Barra Inferior */}
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/pagina-inicial')} // Página inicial (home)
+          onPress={() => router.push('/Usuario/pagina-inicial')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/mapa')} // Mapa
+          onPress={() => router.push('/Usuario/mapa')}
         >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/tutoriais')} // Tutoriais
+          onPress={() => router.push('/Usuario/tutoriais')}
         >
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/perfil')} // Perfil
+          onPress={() => router.push('/perfil')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
@@ -105,63 +189,184 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  image: {
-    width: 200,
-    height: 200,
-    alignSelf: 'center',
-    marginTop: 30,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#3629B7',
-    textAlign: 'center',
-    marginTop: 30,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#888888',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
   scrollView: {
     flexGrow: 1,
-    justifyContent: 'center',
-    paddingBottom: 80, // Para garantir que o botão "Próximo" esteja visível
-  },
-  card: {
-    backgroundColor: '#F5F5F5',
     padding: 20,
-    borderRadius: 10,
-    marginVertical: 10,
-    elevation: 2,
+    paddingBottom: 80,
   },
-  cardTitle: {
-    fontSize: 18,
+  h1: {
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#2F2F2F',
+    color: '#3629B7',
+    marginTop: 20,
+    marginBottom: 10,
   },
-  cardDescription: {
-    marginTop: 5,
-    color: '#888888',
+  h3: {
+    fontSize: 18,
+    color: '#666666',
+    marginBottom: 20,
+    lineHeight: 24,
   },
-  button: {
+  divider: {
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    marginVertical: 20,
+  },
+  listContainer: {
+    marginBottom: 20,
+  },
+  listItem: {
+    fontSize: 16,
+    color: '#444444',
+    marginBottom: 15,
+    lineHeight: 22,
+  },
+  materialButtonsContainer: {
+    marginTop: 20,
+    gap: 15,
+  },
+  materialButton: {
     backgroundColor: '#3629B7',
-    paddingVertical: 15,
-    borderRadius: 5,
-    marginTop: 30,
+    padding: 15,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  buttonText: {
+  materialButtonText: {
     color: 'white',
-    fontWeight: 'bold',
     fontSize: 18,
+    fontWeight: 'bold',
+  },
+  staticContent: {
+    position: 'relative',
+    width: '100%',
+    marginBottom: 20,
+  },
+  imageContainer: {
+    position: 'relative',
+    alignItems: 'center',
+    width: '100%',
+    zIndex: 1,
+  },
+  darkenedBackground: {
+    position: 'absolute',
+    top: 50,
+    left: -20,
+    right: -20,
+    bottom: -1000,
+    backgroundColor: '#EEEEEE',
+    borderRadius: 50,
+    zIndex: 0,
+  },
+  modalImage: {
+    borderRadius: 50,
+    width: 100,
+    height: 100,
+    zIndex: 1,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    width: '90%',
+    maxWidth: 400,
+    height: '90%',
+    maxHeight: 700,
+    elevation: 5,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  modalScrollView: {
+    padding: 20,
+    paddingTop: 60,
+    paddingBottom: 100,
+    width: '100%',
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#3629B7',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  modalContentContainer: {
+    marginTop: 15,
+    paddingBottom: 60,
+  },
+  modalSection: {
+    marginBottom: 15,
+    paddingBottom: 5,
+  },
+  modalSectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#3629B7',
+    marginBottom: 8,
+  },
+  separacaoContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 15,
+  },
+  separacaoColumn: {
+    flex: 1,
+  },
+  separacaoTitleGreen: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4EC063',
+    marginBottom: 6,
+  },
+  separacaoTitleRed: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#E31B1B',
+    marginBottom: 6,
+  },
+  separacaoItemGreen: {
+    fontSize: 14,
+    color: '#4EC063',
+    marginBottom: 4,
+  },
+  separacaoItemRed: {
+    fontSize: 14,
+    color: '#E31B1B',
+    marginBottom: 4,
+  },
+  modalListItem: {
+    fontSize: 14,
+    color: '#444444',
+    marginBottom: 4,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 20,
+    backgroundColor: '#E0E0E0',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
+    zIndex: 2,
+  },
+  closeButtonText: {
+    color: '#444444',
+    fontSize: 28,
+    fontWeight: 'bold',
+    fontFamily: 'System',
+    lineHeight: 28,
   },
   navBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingBottom: 10,
-    position: 'absolute', // Fixa a barra na parte inferior
+    position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
