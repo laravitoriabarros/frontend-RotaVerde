@@ -11,7 +11,7 @@ export default function TelaMapa() {
   const [modalCooperativaVisible, setModalCooperativaVisible] = React.useState(false);
   const [selectedCooperativa, setSelectedCooperativa] = React.useState<Cooperativa | null>(null);
 
-  // Mock cooperativas data (pretend this comes from backend)
+  // vai fazer o fetch das cooperativas do backend, por enquanto esses sao os dados que viriam
   const cooperativas = [
     {
       id: 1,
