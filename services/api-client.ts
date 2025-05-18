@@ -1,3 +1,5 @@
+import { getItemAsync } from 'expo-secure-store'
+
 import ky from 'ky'
 
 const api = ky.create({
@@ -9,6 +11,11 @@ const api = ky.create({
     hooks: {
         beforeRequest: [
             async (request) => {
+                const token = await getItemAsync('token')
+
+                if(token) {
+                    request.headers.set('Authorization', `Bearer ${token}`)
+                }
             }
         ]
     }

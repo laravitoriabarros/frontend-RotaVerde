@@ -5,7 +5,10 @@ import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
-import { loginFormSchema } from '~/services/auth/login-service';
+import { LoginFormData, loginFormSchema, signInService } from '~/services/auth/login-service';
+import { useMutation } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
+import { UserRoleEnum } from '~/lib/types/shared-types';
 
 export default function Login() {
   const router = useRouter();
@@ -14,16 +17,37 @@ export default function Login() {
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: '',
-      password: ''
+      senha: ''
     }
   })
 
-  const handleLogin = () => {
-    router.push('/Usuario/pagina-inicial');
+    const signInMutation = useMutation({
+    mutationFn: signInService,
+    onSuccess: ({ data: { role }}) => {
+      handleRedirectAfterLogin(role)
+    },
+    onError: () => {
+       Toast.show({
+        type: 'error',
+        text1: 'Erro ao realizar o login!',
+        text2: 'Senha ou E-mail estão incorretos.'
+       })
+    }
+  })
+
+  const onSubmit = async (data: LoginFormData) => {
+        await signInMutation.mutateAsync(data)
   }
 
-  const handleRedirectAfterLogin = () => {
-    console.log('vai redirecionar');
+  const handleRedirectAfterLogin = (role: UserRoleEnum) => {
+    switch(role) {
+        case 'cidadao':
+          router.push('/usuario/home')
+        case 'cooperativa':
+        case 'motorista':
+        default:
+         router.push('/usuario/home')
+      }
   };
 
   const redirectToForgotPassword = () => {
@@ -31,7 +55,7 @@ export default function Login() {
   };
 
   const redirectToRegister = () => {
-    router.push('/Pagina-De-Cadastro/cadastro-parte1');
+    router.push('/register');
   };
 
   return (
@@ -64,7 +88,7 @@ export default function Login() {
       <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
         <Controller
           control={control}
-          name='password'
+          name='senha'
           render={({ field: { onChange, value, onBlur, ...field }}) => (
             <TextInput
               className='flex-1 h-[50px]'
@@ -92,8 +116,8 @@ export default function Login() {
           )}
         </TouchableOpacity>
       </View>
-      {errors.password && (
-          <Text className="text-xs mb-4 text-red-500">{errors.password?.message as string}</Text>
+      {errors.senha && (
+          <Text className="text-xs mb-4 text-red-500">{errors.senha?.message as string}</Text>
       )}
 
       {/* Botão esqueci a senha */}
@@ -103,7 +127,7 @@ export default function Login() {
 
       {/* Botão Entrar */}
       <TouchableOpacity className='bg-[#4EC063] py-3.5 items-center rounded-3xl'
-        onPress={handleSubmit(handleLogin)}
+        onPress={handleSubmit(onSubmit)}
        >
         <Text className='text-white font-bold text-base'>Entrar</Text>
       </TouchableOpacity>
