@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/Feather';
 
 export default function HistoricoRotas() {
   const router = useRouter();
+  const [popupVisible, setPopupVisible] = useState(false);
 
   const rotas = [
     { id: 1, veiculo: 'YASHA12', data: '2025-05-01', status: 'Concluído' },
@@ -24,24 +25,23 @@ export default function HistoricoRotas() {
   };
 
   const handleVisualizarRota = (id: number) => {
-    router.push(`/Cooperativa/ver-rota?id=${id}`);
+    setPopupVisible(true);
+    setTimeout(() => setPopupVisible(false), 2000);
   };
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-          <Icon name="arrow-left" size={28} color="#4EC063" />
-        </TouchableOpacity>
-        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
-      </View>
+      {/* Botão de voltar */}
+      <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+        <Icon name="arrow-left" size={28} color="#4EC063" />
+      </TouchableOpacity>
 
-      {/* Título abaixo do cabeçalho */}
+      {/* Imagem no topo */}
+      <Image source={require('../../assets/images/historico.png')} style={styles.image} />
+
       <Text style={styles.title}>Histórico de Rotas</Text>
       <Text style={styles.subtitle}>Veja todas as rotas realizadas!</Text>
 
-      {/* Tabela */}
       <ScrollView style={styles.tableContainer}>
         <View style={styles.tableHeader}>
           <Text style={styles.tableHeaderCell}>Veículo</Text>
@@ -65,7 +65,13 @@ export default function HistoricoRotas() {
         ))}
       </ScrollView>
 
-      {/* Navegação inferior */}
+      {popupVisible && (
+        <View style={styles.popup}>
+          <Text style={styles.popupText}>Documento baixado com sucesso!</Text>
+        </View>
+      )}
+
+      {/* Barra de navegação */}
       <View style={styles.navBar}>
         <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Cooperativa/pagina-inicial')}>
           <Icon name="map" size={30} color="#2F2F2F" />
@@ -91,27 +97,22 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 80,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#3629B7',
-    paddingVertical: 20,
-    paddingHorizontal: 15,
-    justifyContent: 'space-between',
-  },
   backButton: {
-    paddingRight: 10,
+    marginTop: 10,
+    marginBottom: 10,
   },
-  logo: {
-    width: 120,
-    height: 40,
-    resizeMode: 'contain',
+  image: {
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+    marginTop: 10,
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#4EC063',
-    marginTop: 20,
+    marginTop: 10,
     textAlign: 'center',
   },
   subtitle: {
@@ -152,12 +153,27 @@ const styles = StyleSheet.create({
   },
   viewButton: {
     flex: 1,
-    backgroundColor: '#4EC063',
+    backgroundColor: '#3629B7',
     paddingVertical: 8,
     borderRadius: 5,
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: 4,
+  },
+  popup: {
+    position: 'absolute',
+    bottom: 100,
+    left: '20%',
+    right: '20%',
+    backgroundColor: '#4EC063',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  popupText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   navBar: {
     flexDirection: 'row',

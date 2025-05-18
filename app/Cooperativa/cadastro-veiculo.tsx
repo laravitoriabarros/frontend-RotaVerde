@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  Alert,
+  ScrollView
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
@@ -18,27 +26,21 @@ export default function CadastroVeiculo() {
   ];
 
   const handleCadastro = () => {
-    if (placa && modelo && motorista) {
-      Alert.alert('Cadastro efetuado com sucesso!');
-      router.push('/Cooperativa/pagina-inicial');
-    } else {
-      Alert.alert('Por favor, preencha todos os campos!');
-    }
+    Alert.alert('Cadastro efetuado com sucesso!');
+    router.push('/Cooperativa/gerenciar-caminhao');
   };
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
+      {/* Cabeçalho com ícone acima do título */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <Icon name="arrow-left" size={28} color="#4EC063" />
         </TouchableOpacity>
+        <View style={styles.iconContainer}>
+          <Icon name="truck" size={100} color="#4EC063" />
+        </View>
         <Text style={styles.title}>Cadastro de Veículo</Text>
-      </View>
-
-      {/* Ícone de caminhão */}
-      <View style={styles.iconContainer}>
-        <Icon name="truck" size={100} color="#4EC063" />
       </View>
 
       {/* Formulário */}
@@ -119,7 +121,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 10,
   },
   label: {
     fontSize: 16,

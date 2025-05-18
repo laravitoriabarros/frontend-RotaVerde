@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
-import Icon from 'react-native-vector-icons/Feather'; 
+import Icon from 'react-native-vector-icons/Feather';
 
 export default function TelaCriarSenha() {
   const router = useRouter();
-  
+
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +24,7 @@ export default function TelaCriarSenha() {
 
   const handleSubmit = () => {
     if (password === confirmPassword) {
-      router.push('/esqueci-a-senha-p4'); // Redireciona para a próxima tela
+      router.push('/esqueci-a-senha-p4');
     } else {
       Alert.alert("As senhas não coincidem. Tente novamente.");
     }
@@ -36,8 +36,14 @@ export default function TelaCriarSenha() {
         <Icon name="arrow-left" size={30} color="#4EC063" />
       </TouchableOpacity>
 
+      <Image
+        source={require('../assets/images/senha03.png')}
+        style={styles.image}
+        resizeMode="contain"
+      />
+
       <Text style={styles.title}>Crie uma nova senha!</Text>
-      
+
       <TextInput
         secureTextEntry={!showPassword}
         value={password}
@@ -45,7 +51,7 @@ export default function TelaCriarSenha() {
         placeholder="Digite a senha"
         style={styles.input}
       />
-      
+
       <TextInput
         secureTextEntry={!showPassword}
         value={confirmPassword}
@@ -53,11 +59,11 @@ export default function TelaCriarSenha() {
         placeholder="Confirme a senha"
         style={styles.input}
       />
-      
+
       <TouchableOpacity onPress={togglePasswordVisibility} style={styles.showPasswordText}>
         <Text>{showPassword ? "Ocultar senha" : "Mostrar senha"}</Text>
       </TouchableOpacity>
-      
+
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Finalizar</Text>
       </TouchableOpacity>
@@ -77,6 +83,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
     left: 20,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,

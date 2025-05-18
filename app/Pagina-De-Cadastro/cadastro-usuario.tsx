@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -10,43 +10,25 @@ export default function CadastroUsuario() {
   const [usuario, setUsuario] = useState('');
   const [metodoContato, setMetodoContato] = useState('');
   const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
 
   const handleContinuar = () => {
-    // Verificando se todos os campos estão preenchidos
-    if (!nome || !usuario || !metodoContato || !senha || !confirmarSenha) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos!');
-      return;
-    }
-
-    // Verificando se as senhas coincidem
-    if (senha !== confirmarSenha) {
-      Alert.alert('Erro', 'As senhas não coincidem!');
-      return;
-    }
-
-    
-    router.push('/login');
+    router.push('/Usuario/pagina-inicial');
   };
 
   return (
     <View style={styles.container}>
-      {/* Botão de Voltar */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Icon name="arrow-left" size={28} color="#4EC063" />
       </TouchableOpacity>
 
-      {/* Imagem do logo*/}
       <Image
         source={require('../../assets/images/logo.png')}
         style={styles.image}
         resizeMode="contain"
       />
 
-      {/* Título */}
       <Text style={styles.title}>Cadastre-se</Text>
 
-      {/* Campos de cadastro */}
       <Text style={styles.label}>Nome</Text>
       <TextInput
         style={styles.input}
@@ -80,16 +62,6 @@ export default function CadastroUsuario() {
         onChangeText={setSenha}
       />
 
-      <Text style={styles.label}>Confirmar senha</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Confirme sua senha"
-        secureTextEntry
-        value={confirmarSenha}
-        onChangeText={setConfirmarSenha}
-      />
-
-      {/* Botão Continuar */}
       <TouchableOpacity style={styles.button} onPress={handleContinuar}>
         <Text style={styles.buttonText}>Continuar</Text>
       </TouchableOpacity>

@@ -18,9 +18,11 @@ export default function GerenciarCaminhoes() {
   const handleDelete = (placa: string) => {
     Alert.alert('Confirmação', 'Você tem certeza que deseja excluir este caminhão?', [
       { text: 'Cancelar', style: 'cancel' },
-      { text: 'Sim', onPress: () => {
-          setCaminhoes(caminhoes.filter(caminhao => caminhao.placa !== placa));
-        }
+      {
+        text: 'Sim',
+        onPress: () => {
+          setCaminhoes(caminhoes.filter(c => c.placa !== placa));
+        },
       },
     ]);
   };
@@ -31,20 +33,15 @@ export default function GerenciarCaminhoes() {
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <Image
-          source={require('../../assets/images/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
+      {/* Imagem substituindo o cabeçalho */}
+      <Image
+        source={require('../../assets/images/gerenciar-caminhao.png')}
+        style={styles.image}
+      />
 
-      {/* Título */}
       <Text style={styles.title}>Gerenciamento de Caminhões</Text>
       <Text style={styles.subtitle}>Veja a lista de caminhões associados!</Text>
 
-      {/* Tabela */}
       <View style={styles.tableContainer}>
         <View style={styles.tableHeader}>
           <Text style={styles.tableHeaderText}>Veículo</Text>
@@ -70,7 +67,6 @@ export default function GerenciarCaminhoes() {
         ))}
       </View>
 
-      {/* Botões */}
       <View style={styles.buttonsContainer}>
         <TouchableOpacity style={styles.button} onPress={() => handleNavigate('/Cooperativa/cadastro-veiculo')}>
           <Text style={styles.buttonText}>Cadastrar Veículo</Text>
@@ -80,7 +76,6 @@ export default function GerenciarCaminhoes() {
         </TouchableOpacity>
       </View>
 
-      {/* Barra de navegação inferior */}
       <View style={styles.navBar}>
         <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/Cooperativa/pagina-inicial')}>
           <Icon name="map" size={30} color="#2F2F2F" />
@@ -105,22 +100,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 40,
+    paddingBottom: 80,
   },
-  header: {
-    width: '100%',
-    backgroundColor: '#3629B7',
-    paddingTop: 20,
-    paddingBottom: 20,
-    alignItems: 'center',
-  },
-  logo: {
-    width: 120,
-    height: 40,
+  image: {
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#2F2F2F',
+    color: '#3629B7',
     textAlign: 'center',
     marginVertical: 20,
   },

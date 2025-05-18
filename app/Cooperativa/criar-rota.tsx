@@ -4,37 +4,19 @@ import {
   Text,
   TouchableOpacity,
   StyleSheet,
-  TextInput,
   Alert,
-  Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import * as DocumentPicker from 'expo-document-picker';
 import Icon from 'react-native-vector-icons/Feather';
+import { Picker } from '@react-native-picker/picker';
 
 export default function CriarRota() {
   const router = useRouter();
-  const [tempoDuracao, setTempoDuracao] = useState('');
-  const [arquivo, setArquivo] = useState<DocumentPicker.DocumentPickerAsset | null>(null);
-
-  const handleEnviarArquivo = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: '*/*',
-      copyToCacheDirectory: true,
-      multiple: false,
-    });
-
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setArquivo(result.assets[0]);
-    }
-  };
+  const [area, setArea] = useState('');
 
   const handleCriarRota = () => {
-    if (tempoDuracao && arquivo) {
-      Alert.alert('Rota criada com sucesso!');
-    } else {
-      Alert.alert('Preencha todos os campos!');
-    }
+    Alert.alert('Rota criada com sucesso!');
+    router.push('/Cooperativa/gerenciar-rotas');
   };
 
   return (
@@ -43,25 +25,33 @@ export default function CriarRota() {
         <Icon name="arrow-left" size={24} color="#2F2F2F" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>Crie uma nova rota!</Text>
-
+      {/* Ícone grande acima do título */}
       <Icon name="map" size={80} color="#4EC063" style={styles.bigIcon} />
 
-      <Text style={styles.label}>Escolha o Tempo de Duração</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ex: 2h 30min"
-        value={tempoDuracao}
-        onChangeText={setTempoDuracao}
-      />
+      {/* Título abaixo do ícone */}
+      <Text style={styles.title}>Crie uma nova rota!</Text>
 
-      <Text style={styles.label}>Envie sua rota</Text>
-      <TouchableOpacity style={styles.uploadButton} onPress={handleEnviarArquivo}>
-        <Text style={styles.uploadButtonText}>
-          {arquivo ? 'Arquivo selecionado: ' + arquivo.name : 'Selecionar arquivo'}
-        </Text>
-      </TouchableOpacity>
+      {/* Subtexto cinza */}
+      <Text style={styles.subtext}>
+        Quando você clicar no botão, uma nova rota será gerada pelo nosso sistema e disponibilizada para todos!
+      </Text>
 
+      {/* Campo dropdown de área */}
+      <Text style={styles.label}>Qual a área da rota?</Text>
+      <View style={styles.pickerWrapper}>
+        <Picker
+          selectedValue={area}
+          onValueChange={(value) => setArea(value)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Selecione uma área" value="" />
+          <Picker.Item label="Farol" value="Farol" />
+          <Picker.Item label="Benedito Bentes" value="Benedito Bentes" />
+          <Picker.Item label="Antares" value="Antares" />
+        </Picker>
+      </View>
+
+      {/* Botão de criação */}
       <TouchableOpacity style={styles.createButton} onPress={handleCriarRota}>
         <Text style={styles.createButtonText}>Criar rota</Text>
       </TouchableOpacity>
@@ -78,16 +68,22 @@ const styles = StyleSheet.create({
   backButton: {
     marginBottom: 10,
   },
+  bigIcon: {
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
     color: '#3629B7',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
-  bigIcon: {
-    alignSelf: 'center',
+  subtext: {
+    color: '#888888',
+    textAlign: 'center',
     marginBottom: 30,
+    fontSize: 14,
   },
   label: {
     fontSize: 16,
@@ -95,22 +91,16 @@ const styles = StyleSheet.create({
     color: '#2F2F2F',
     marginBottom: 5,
   },
-  input: {
+  pickerWrapper: {
     borderWidth: 1,
     borderColor: '#CCCCCC',
     borderRadius: 8,
-    padding: 12,
-    marginBottom: 20,
-  },
-  uploadButton: {
-    backgroundColor: '#E0E0E0',
-    padding: 12,
-    borderRadius: 8,
     marginBottom: 30,
+    overflow: 'hidden',
   },
-  uploadButtonText: {
-    color: '#2F2F2F',
-    textAlign: 'center',
+  picker: {
+    height: 50,
+    width: '100%',
   },
   createButton: {
     backgroundColor: '#3629B7',

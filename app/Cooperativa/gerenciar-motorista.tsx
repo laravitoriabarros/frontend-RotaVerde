@@ -40,17 +40,15 @@ export default function GerenciarMotoristas() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-          <Icon name="arrow-left" size={28} color="white" />
-        </TouchableOpacity>
-        <View style={styles.logoContainer}>
-          <Image
-            source={require('../../assets/images/logo.png')}
-            style={styles.logo}
-          />
-        </View>
-      </View>
+      {/* Seta de voltar + imagem no topo */}
+      <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+        <Icon name="arrow-left" size={28} color="#4EC063" />
+      </TouchableOpacity>
+
+      <Image
+        source={require('../../assets/images/motorista.png')}
+        style={styles.image}
+      />
 
       <Text style={styles.title}>Gerenciamento de Motoristas</Text>
       <Text style={styles.subtitle}>Veja todos os seus motoristas associados!</Text>
@@ -143,29 +141,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     padding: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#3629B7',
-    padding: 20,
+    paddingBottom: 80,
   },
   backButton: {
-    marginRight: 20,
+    marginTop: 10,
+    marginBottom: 10,
   },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  logo: {
-    width: 120,
-    height: 40,
-    resizeMode: 'contain',
+  image: {
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'black',
-    marginTop: 20,
+    color: '#3629B7',
+    marginTop: 10,
     textAlign: 'center',
   },
   subtitle: {
