@@ -62,7 +62,7 @@ export default function EditarPerfil() {
           style={styles.input}
           value={descricao}
           onChangeText={setDescricao}
-          placeholder="Fale um pouco sobre sua cooperativa"
+          placeholder="Fale um pouco sobre você"
           multiline
         />
 
