@@ -33,7 +33,7 @@ export default function PaginaDeEntrada() {
 
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#4EC063' }]}
-          onPress={() => router.push('/Pagina-De-Cadastro/cadastro-parte1')}
+          onPress={() => router.push('/register')}
         >
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>

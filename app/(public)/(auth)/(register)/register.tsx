@@ -6,7 +6,6 @@ import Icon from 'react-native-vector-icons/Feather';
 
 export default function CadastroParte1() {
   const router = useRouter();
-  const [metodoContato, setMetodoContato] = useState('');
   const [identidade, setIdentidade] = useState('');
 
   const handleContinuar = () => {
@@ -30,7 +29,7 @@ export default function CadastroParte1() {
 
       {/* Imagem */}
       <Image
-        source={require('../../assets/images/cadastro-01.png')}
+        source={require('../../../../assets/images/cadastro-01.png')}
         style={styles.image}
         resizeMode="contain"
       />

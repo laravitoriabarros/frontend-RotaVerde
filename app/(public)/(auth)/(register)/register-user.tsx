@@ -31,6 +31,7 @@ export default function CadastroUsuario() {
         type: 'success',
         text1: 'Cadastro realizado com sucesso!',
        })
+       router.push('/signin')
     },
     onError: () => {
        Toast.show({
@@ -40,19 +41,14 @@ export default function CadastroUsuario() {
     }
   })
 
-  const onSubmit = (data: RegisterUserFormData) => {
+  const onSubmit = async (data: RegisterUserFormData) => {
     const { telefone, ...userInfo } = data
     const formattedData = {
         telefone: removeMask(telefone),
         ...userInfo
     }
-    registerUserMutation.mutateAsync(formattedData)
+   await registerUserMutation.mutateAsync(formattedData)
   }
-
-
-  const handleContinuar = () => {
-    router.push('/Usuario/pagina-inicial');
-  };
 
   return (
     <View style={styles.container}>
@@ -61,7 +57,7 @@ export default function CadastroUsuario() {
       </TouchableOpacity>
 
       <Image
-        source={require('../../../assets/images/logo.png')}
+        source={require('../../../../assets/images/logo.png')}
         style={styles.image}
         resizeMode="contain"
       />
