@@ -26,7 +26,7 @@ export default function PaginaDeEntrada() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#3629B7' }]}
-          onPress={() => router.push('/login')}
+          onPress={() => router.push('/signin')}
         >
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>

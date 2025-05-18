@@ -56,7 +56,7 @@ export default function Perfil() {
         <TouchableOpacity onPress={() => setShowDeleteModal(true)}>
           <Text style={styles.optionText}>Excluir Conta</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.replace('/login')}>
+        <TouchableOpacity onPress={() => router.replace('/signin')}>
           <Text style={[styles.optionText, { color: '#B00020' }]}>Sair da conta</Text>
         </TouchableOpacity>
       </View>

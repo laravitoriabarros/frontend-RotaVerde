@@ -11,11 +11,11 @@ export default function CadastroParte1() {
 
   const handleContinuar = () => {
     if (identidade === 'cidadao') {
-      router.push('/Pagina-De-Cadastro/cadastro-usuario');
+      router.push('/register-user');
     } else if (identidade === 'cooperativa') {
       router.push('/Pagina-De-Cadastro/cadastro-cooperativa');
     } else if (identidade === 'motorista') {
-      router.push('/Pagina-De-Cadastro/cadastro-motorista'); 
+      router.push('/Pagina-De-Cadastro/cadastro-motorista');
     } else {
       alert('Por favor, selecione como você se identifica.');
     }
@@ -37,19 +37,6 @@ export default function CadastroParte1() {
 
       {/* Título */}
       <Text style={styles.title}>Vamos começar!</Text>
-
-      {/* Escolha método de contato */}
-      <Text style={styles.label}>Escolha um método de contato</Text>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={metodoContato}
-          onValueChange={(itemValue) => setMetodoContato(itemValue)}
-        >
-          <Picker.Item label="Clique aqui para escolher" value="" />
-          <Picker.Item label="Número de Celular" value="celular" />
-          <Picker.Item label="E-mail" value="email" />
-        </Picker>
-      </View>
 
       {/* Escolha sua identidade */}
       <Text style={styles.label}>Como você se identifica?</Text>

@@ -8,7 +8,7 @@ export default function Perfil() {
 
   const handleOptionPress = (option: string) => {
     if (option === 'Sair da conta') {
-      router.replace('/login');
+      router.replace('/signin');
     } else {
       console.log(`Opção clicada: ${option}`);
     }
