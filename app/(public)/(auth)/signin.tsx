@@ -7,8 +7,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { LoginFormData, loginFormSchema, signInService } from '~/services/auth/login-service';
 import { useMutation } from '@tanstack/react-query';
-import Toast from 'react-native-toast-message';
 import { UserRoleEnum } from '~/lib/types/shared-types';
+import Toast from 'react-native-toast-message';
 
 export default function Login() {
   const router = useRouter();
@@ -44,7 +44,9 @@ export default function Login() {
         case 'cidadao':
           router.push('/usuario/home')
         case 'cooperativa':
+          router.push('/cooperativa/home')
         case 'motorista':
+          router.push('/motorista/home')
         default:
          router.push('/usuario/home')
       }
