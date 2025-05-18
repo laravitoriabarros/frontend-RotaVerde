@@ -3,20 +3,61 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView 
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { RegisterMotoristaFormData, registerMotoristaFormSchema, registerMotoristaService } from '~/services/register/register-motorista-service';
+import { maskInputPhone } from '~/lib/masks-input';
+import { ShowHiddenPassword } from '~/components/ui/show-hidden-password';
+import { removeMask } from '~/lib/parse';
+import { useMutation } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
 
 export default function CadastroMotorista() {
   const router = useRouter();
 
-  const [nome, setNome] = useState('');
-  const [usuario, setUsuario] = useState('');
-  const [metodoContato, setMetodoContato] = useState('');
-  const [cooperativa, setCooperativa] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
+    const [showPassword, setShowPassword] = useState<boolean>(false)
+    const { control, handleSubmit, formState: { errors } } = useForm({
+      resolver: zodResolver(registerMotoristaFormSchema),
+      defaultValues: {
+        nome_usuario: '',
+        telefone: '',
+        email: '',
+        senha: '',
+        nome_cooperativa: '',
+        confirmar_senha: ''
+      }
+    })
 
-  const handleCriar = () => {
-    router.push('/Motorista/pagina-inicial');
-  };
+
+    const registerMotoristaMutation = useMutation({
+    mutationFn: registerMotoristaService,
+    onSuccess: () => {
+       Toast.show({
+        type: 'success',
+        text1: 'Cadastro realizado com sucesso!',
+       })
+       router.push('/signin')
+    },
+    onError: () => {
+       Toast.show({
+        type: 'error',
+        text1: 'Erro ao realizar o cadastro!',
+       })
+    }
+  })
+
+
+    const onSubmit = async (data: RegisterMotoristaFormData) => {
+      const { confirmar_senha, telefone, ...userData } = data
+
+      const formattedData = {
+        ...userData,
+        telefone: removeMask(telefone)
+      }
+
+      await registerMotoristaMutation.mutateAsync(formattedData)
+    }
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -33,62 +74,137 @@ export default function CadastroMotorista() {
       <Text style={styles.title}>Cadastro Motorista</Text>
 
       <Text style={styles.label}>Nome</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Digite seu nome..."
-        value={nome}
-        onChangeText={setNome}
+      <Controller
+        control={control}
+        name='nome_usuario'
+        render={({ field: { onChange, value, onBlur, ...field } }) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Digite seu nome..."
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+          />
+        )}
       />
+      {errors.nome_usuario && (
+        <Text className="text-xs mb-4 text-red-500">{errors.nome_usuario?.message}</Text>
+      )}
 
-      <Text style={styles.label}>Nome de Usuário</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Digite seu nome de usuário..."
-        value={usuario}
-        onChangeText={setUsuario}
+       <Text style={styles.label}>E-mail</Text>
+      <Controller
+        control={control}
+        name='email'
+        render={({ field: { onChange, value, onBlur, ...field } }) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Digite seu e-mail..."
+            value={value}
+            onChangeText={onChange}
+            onBlur={onBlur}
+          />
+        )}
       />
+      {errors.email && (
+        <Text className="text-xs mb-4 text-red-500">{errors.email?.message}</Text>
+      )}
 
-      <Text style={styles.label}>Método de Contato</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Digite seu número ou email..."
-        value={metodoContato}
-        onChangeText={setMetodoContato}
+      <Text style={styles.label}>Número de telefone</Text>
+      <Controller
+        control={control}
+        name='telefone'
+        render={
+          ({ field: { onChange, onBlur, value, ...field } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu número de telefone..."
+              value={value}
+              onChangeText={(value: string) => {
+                const phone = maskInputPhone(value)
+                onChange(phone)
+              }}
+              onBlur={onBlur}
+            />
+          )
+        }
       />
+      {errors.telefone && (
+        <Text className="text-xs mb-4 text-red-500">{errors.telefone?.message}</Text>
+      )}
 
       <Text style={styles.label}>Cooperativa</Text>
       <View style={styles.pickerContainer}>
+              <Controller
+        control={control}
+        name='nome_cooperativa'
+        render={
+          ({ field: { onChange, onBlur, value, ...field } }) => (
         <Picker
-          selectedValue={cooperativa}
-          onValueChange={(itemValue) => setCooperativa(itemValue)}
-        >
+          selectedValue={value}
+          onValueChange={(value) => {
+            onChange(value)
+          }}
+           >
           <Picker.Item label="Escolha uma cooperativa" value="" />
           <Picker.Item label="Cooprel" value="cooprel" />
           <Picker.Item label="Coopvila" value="coopvila" />
           <Picker.Item label="Outro" value="outro" />
-        </Picker>
+          </Picker>
+          )
+        }
+      />
       </View>
+        {errors.nome_cooperativa && (
+              <Text className="text-xs mb-4 text-red-500">{errors.nome_cooperativa?.message}</Text>
+        )}
 
       <Text style={styles.label}>Senha</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Digite sua senha"
-        secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
-      />
+      <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
+        <Controller
+          control={control}
+          name='senha'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              className='flex-1 h-[50px]'
+              placeholder="Digite sua senha..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              secureTextEntry={!showPassword}
+            />
+          )}
+        />
+        <ShowHiddenPassword
+          setShowPassword={setShowPassword}
+          showPassword={showPassword}
+          />
+      </View>
+      {errors.senha && (
+        <Text className="text-xs mb-4 text-red-500">{errors.senha?.message}</Text>
+      )}
 
-      <Text style={styles.label}>Confirmar Senha</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Confirme sua senha"
-        secureTextEntry
-        value={confirmarSenha}
-        onChangeText={setConfirmarSenha}
-      />
-
-      <TouchableOpacity style={styles.button} onPress={handleCriar}>
-        <Text style={styles.buttonText}>Criar</Text>
+      <Text style={styles.label}>Confirme sua senha</Text>
+      <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
+        <Controller
+          control={control}
+          name='confirmar_senha'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              className='flex-1 h-[50px]'
+              placeholder="Digite sua senha..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+              secureTextEntry
+            />
+          )}
+        />
+      </View>
+      {errors.confirmar_senha && (
+        <Text className="text-xs mb-4 text-red-500">{errors.confirmar_senha?.message}</Text>
+      )}
+      <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+        <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
     </ScrollView>
   );

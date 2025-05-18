@@ -48,7 +48,7 @@ export default function Login() {
         case 'motorista':
           router.push('/motorista/home')
         default:
-         router.push('/usuario/home')
+         break;
       }
   };
 
