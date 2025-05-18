@@ -12,9 +12,9 @@ export default function CadastroParte1() {
     if (identidade === 'cidadao') {
       router.push('/register-user');
     } else if (identidade === 'cooperativa') {
-      router.push('/Pagina-De-Cadastro/cadastro-cooperativa');
+      router.push('/register-cooperativa');
     } else if (identidade === 'motorista') {
-      router.push('/Pagina-De-Cadastro/cadastro-motorista');
+      router.push('/register-motorista');
     } else {
       alert('Por favor, selecione como você se identifica.');
     }
