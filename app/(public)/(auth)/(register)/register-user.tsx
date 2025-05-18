@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
-import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
 import { RegisterUserFormData, registerUserFormSchema, registerUserService } from '~/services/register/register-user-service';
@@ -10,6 +9,7 @@ import { maskInputPhone } from '~/lib/masks-input';
 import { useMutation } from '@tanstack/react-query';
 import { removeMask } from '~/lib/parse';
 import Toast from 'react-native-toast-message';
+import { ShowHiddenPassword } from '~/components/ui/show-hidden-password';
 
 export default function CadastroUsuario() {
   const router = useRouter();
@@ -139,21 +139,10 @@ export default function CadastroUsuario() {
             />
           )}
         />
-        <TouchableOpacity
-          onPress={() => {
-            setShowPassword(() => !showPassword)
-          }}
-        >
-          {showPassword ? (
-            <>
-              <EyeOff size={20} color="#999" />
-            </>
-          ) : (
-            <>
-              <Eye size={20} color="#999" />
-            </>
-          )}
-        </TouchableOpacity>
+        <ShowHiddenPassword
+          setShowPassword={setShowPassword}
+          showPassword={showPassword}
+          />
       </View>
       {errors.senha && (
         <Text className="text-xs mb-4 text-red-500">{errors.senha?.message}</Text>
