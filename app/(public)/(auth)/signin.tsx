@@ -43,10 +43,13 @@ export default function Login() {
     switch(role) {
         case 'cidadao':
           router.push('/usuario/home')
+          break;
         case 'cooperativa':
           router.push('/cooperativa/home')
+          break;
         case 'motorista':
           router.push('/motorista/home')
+          break;
         default:
          break;
       }
