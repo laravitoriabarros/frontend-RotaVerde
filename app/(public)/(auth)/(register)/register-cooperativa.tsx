@@ -2,155 +2,225 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
-import { Picker } from '@react-native-picker/picker';
+import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { RegisterCooperativaFormData, registerCooperativaFormSchema, registerCooperativaService, registerCooperativaServiceSchema } from '~/services/register/register-cooperativa-service';
+import { ShowHiddenPassword } from '~/components/ui/show-hidden-password';
+import { maskInputCnpj, maskInputPhone } from '~/lib/masks-input';
+import { removeMask } from '~/lib/parse';
+import { useMutation } from '@tanstack/react-query';
+import Toast from 'react-native-toast-message';
 
 export default function CadastroCooperativa() {
   const router = useRouter();
-  const [areaAtuacao, setAreaAtuacao] = useState('');
-  const [outros, setOutros] = useState('');
-  const [cnpj, setCnpj] = useState('');
-  const [nomeCooperativa, setNomeCooperativa] = useState('');
-  const [metodoContato, setMetodoContato] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [cep, setCep] = useState('');
-  const [rua, setRua] = useState('');
-  const [bairro, setBairro] = useState('');
-  const [numero, setNumero] = useState('');
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(registerCooperativaFormSchema),
+    defaultValues: {
+      nome_usuario: '',
+      telefone: '',
+      email: '',
+      senha: '',
+      cnpj: '',
+      nome_cooperativa: '',
+      confirmar_senha: ''
+    }
+  })
 
-  const handleFinalizar = () => {
-    router.push('/Cooperativa/pagina-inicial');
-  };
+  const registerCooperativaMutation = useMutation({
+    mutationFn: registerCooperativaService,
+    onSuccess: () => {
+       Toast.show({
+        type: 'success',
+        text1: 'Cadastro realizado com sucesso!',
+       })
+       router.push('/signin')
+    },
+    onError: () => {
+       Toast.show({
+        type: 'error',
+        text1: 'Erro ao realizar o cadastro!',
+       })
+    }
+  })
+
+
+  const onSubmit = async (data: RegisterCooperativaFormData) => {
+    const { cnpj, telefone, confirmar_senha, ...userData } = data
+
+    const formattedData = {
+      telefone: removeMask(telefone),
+      cnpj: removeMask(cnpj),
+      ...userData
+    }
+
+    console.log(formattedData)
+
+    await registerCooperativaMutation.mutateAsync(formattedData)
+  }
 
   return (
     <View style={styles.container}>
-      {/* Botão Voltar */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Icon name="arrow-left" size={28} color="#4EC063" />
       </TouchableOpacity>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Imagem */}
         <Image
           source={require('../../../../assets/images/logo.png')}
           style={styles.image}
           resizeMode="contain"
         />
 
-        {/* Título */}
         <Text style={styles.title}>Cadastre-se</Text>
 
-        {/* Campos de cadastro */}
         <Text style={styles.label}>CNPJ</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite aqui seu CNPJ [SEM PONTUAÇÃO]"
-          value={cnpj}
-          onChangeText={setCnpj}
-        />
-
-        <Text style={styles.label}>Nome da Cooperativa</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite o nome da cooperativa..."
-          value={nomeCooperativa}
-          onChangeText={setNomeCooperativa}
-        />
-
-        <Text style={styles.label}>Método de Contato</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite seu número ou email..."
-          value={metodoContato}
-          onChangeText={setMetodoContato}
-        />
-
-        <Text style={styles.label}>Senha</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite sua senha"
-          secureTextEntry
-          value={senha}
-          onChangeText={setSenha}
-        />
-
-        <Text style={styles.label}>Confirmar senha</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Confirme sua senha"
-          secureTextEntry
-          value={confirmarSenha}
-          onChangeText={setConfirmarSenha}
-        />
-
-        {/* Área de Atuação */}
-        <Text style={styles.label}>Selecione suas áreas de atuação</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={areaAtuacao}
-            onValueChange={(itemValue) => setAreaAtuacao(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Clique aqui para escolher" value="" />
-            <Picker.Item label="Serraria" value="Serraria" />
-            <Picker.Item label="Gruta de Lourdes" value="Gruta de Lourdes" />
-            <Picker.Item label="Tabuleiro dos Martins" value="Tabuleiro dos Martins" />
-            <Picker.Item label="Trapiche" value="Trapiche" />
-            <Picker.Item label="Outros" value="Outros" />
-          </Picker>
-        </View>
-
-        {/* Se escolher "Outros" */}
-        {areaAtuacao === 'Outros' && (
-          <>
-            <Text style={styles.label}>Informe o local</Text>
+        <Controller
+          control={control}
+          name='cnpj'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
             <TextInput
               style={styles.input}
-              placeholder="Digite o nome do local"
-              value={outros}
-              onChangeText={setOutros}
+              placeholder="Digite seu número de telefone..."
+              value={value}
+              onChangeText={(value: string) => {
+                const cnpj = maskInputCnpj(value)
+                onChange(cnpj)
+              }}
+              onBlur={onBlur}
             />
-          </>
+          )}
+        />
+        {errors.cnpj && (
+          <Text className="text-xs mb-4 text-red-500">{errors.cnpj?.message}</Text>
         )}
 
-        {/* Informações de Endereço */}
-        <Text style={styles.sectionTitle}>Informações de endereço</Text>
-
-        <Text style={styles.label}>CEP</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Insira o CEP"
-          value={cep}
-          onChangeText={setCep}
+        <Text style={styles.label}>Nome do responsável</Text>
+        <Controller
+          control={control}
+          name='nome_usuario'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu nome..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
         />
+        {errors.nome_usuario && (
+          <Text className="text-xs mb-4 text-red-500">{errors.nome_usuario?.message}</Text>
+        )}
 
-        <Text style={styles.label}>Rua</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite a rua do endereço"
-          value={rua}
-          onChangeText={setRua}
+        <Text style={styles.label}>Nome da Cooperativa</Text>
+        <Controller
+          control={control}
+          name='nome_cooperativa'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu nome..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
         />
+        {errors.nome_usuario && (
+          <Text className="text-xs mb-4 text-red-500">{errors.nome_usuario?.message}</Text>
+        )}
 
-        <Text style={styles.label}>Bairro</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite o bairro do endereço"
-          value={bairro}
-          onChangeText={setBairro}
+
+        <Text style={styles.label}>E-mail</Text>
+        <Controller
+          control={control}
+          name='email'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu e-mail..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
         />
+        {errors.email && (
+          <Text className="text-xs mb-4 text-red-500">{errors.email?.message}</Text>
+        )}
 
-        <Text style={styles.label}>Número do Endereço</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite o número do endereço"
-          value={numero}
-          onChangeText={setNumero}
+        <Text style={styles.label}>Número de telefone</Text>
+        <Controller
+          control={control}
+          name='telefone'
+          render={
+            ({ field: { onChange, onBlur, value, ...field } }) => (
+              <TextInput
+                style={styles.input}
+                placeholder="Digite seu número de telefone..."
+                value={value}
+                onChangeText={(value: string) => {
+                  const phone = maskInputPhone(value)
+                  onChange(phone)
+                }}
+                onBlur={onBlur}
+              />
+            )
+          }
         />
+        {errors.telefone && (
+          <Text className="text-xs mb-4 text-red-500">{errors.telefone?.message}</Text>
+        )}
 
-        {/* Botão Finalizar */}
-        <TouchableOpacity style={styles.button} onPress={handleFinalizar}>
-          <Text style={styles.buttonText}>Finalizar</Text>
+        <Text style={styles.label}>Senha</Text>
+        <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
+          <Controller
+            control={control}
+            name='senha'
+            render={({ field: { onChange, value, onBlur, ...field } }) => (
+              <TextInput
+                className='flex-1 h-[50px]'
+                placeholder="Digite sua senha..."
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                secureTextEntry={!showPassword}
+              />
+            )}
+          />
+          <ShowHiddenPassword
+            setShowPassword={setShowPassword}
+            showPassword={showPassword}
+          />
+        </View>
+        {errors.senha && (
+          <Text className="text-xs mb-4 text-red-500">{errors.senha?.message}</Text>
+        )}
+
+        <Text style={styles.label}>Confirme sua senha</Text>
+        <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
+          <Controller
+            control={control}
+            name='confirmar_senha'
+            render={({ field: { onChange, value, onBlur, ...field } }) => (
+              <TextInput
+                className='flex-1 h-[50px]'
+                placeholder="Confirme sua senha..."
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                secureTextEntry
+              />
+            )}
+          />
+        </View>
+        {errors.confirmar_senha && (
+          <Text className="text-xs mb-4 text-red-500">{errors.confirmar_senha?.message}</Text>
+        )}
+
+        <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
+          <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>

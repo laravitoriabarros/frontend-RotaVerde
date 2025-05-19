@@ -191,7 +191,7 @@ export default function CadastroMotorista() {
           render={({ field: { onChange, value, onBlur, ...field } }) => (
             <TextInput
               className='flex-1 h-[50px]'
-              placeholder="Digite sua senha..."
+              placeholder="Confirme sua senha..."
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
