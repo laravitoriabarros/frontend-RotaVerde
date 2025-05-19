@@ -31,12 +31,10 @@ export default function Perfil() {
 
   return (
     <View style={styles.container}>
+      {/* Cabeçalho com imagem */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Icon name="arrow-left" size={26} color="white" />
-        </TouchableOpacity>
         <Image
-          source={require('../assets/images/perfil-roxo-mulher.png')}
+          source={require('../../assets/images/perfil-roxo-mulher.png')}
           style={styles.profileImage}
         />
         <TouchableOpacity onPress={() => setShowUploadModal(true)}>
@@ -44,11 +42,12 @@ export default function Perfil() {
         </TouchableOpacity>
       </View>
 
+      {/* Opções */}
       <View style={styles.options}>
         <TouchableOpacity onPress={() => router.push('/mudar-senha-perfil')}>
           <Text style={styles.optionText}>Mudar Senha</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/editar-perfil')}>
+        <TouchableOpacity onPress={() => router.push('/Cooperativa/editar-perfil-cooperativa')}>
           <Text style={styles.optionText}>Mudar Informações Pessoais</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => router.push('/termo-privacidade')}>
@@ -62,6 +61,7 @@ export default function Perfil() {
         </TouchableOpacity>
       </View>
 
+      {/* Envio de imagem */}
       <Modal visible={showUploadModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -76,6 +76,7 @@ export default function Perfil() {
         </View>
       </Modal>
 
+      {/* Confirmação de exclusão */}
       <Modal visible={showDeleteModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
@@ -100,6 +101,22 @@ export default function Perfil() {
           </View>
         </View>
       </Modal>
+
+      {/* Barra de navegação inferior */}
+      <View style={styles.navBar}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Cooperativa/pagina-inicial')}>
+          <Icon name="map" size={28} color="#2F2F2F" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Cooperativa/gerenciar-caminhao')}>
+          <Icon name="truck" size={28} color="#2F2F2F" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Cooperativa/gerenciar-rotas')}>
+          <Icon name="info" size={28} color="#2F2F2F" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Cooperativa/perfil-cooperativa')}>
+          <Icon name="user" size={28} color="#2F2F2F" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -108,20 +125,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingBottom: 40,
+    paddingBottom: 80,
   },
   header: {
     backgroundColor: '#3629B7',
     alignItems: 'center',
-    paddingTop: 60,
-    paddingBottom: 20,
-    position: 'relative',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 60,
-    left: 20,
-    zIndex: 1,
+    paddingVertical: 20,
   },
   profileImage: {
     width: 100,
@@ -142,6 +151,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#2F2F2F',
     marginBottom: 15,
+  },
+  navBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingBottom: 20,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  navIcon: {
+    padding: 10,
   },
   modalOverlay: {
     flex: 1,

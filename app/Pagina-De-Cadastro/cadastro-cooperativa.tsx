@@ -19,19 +19,7 @@ export default function CadastroCooperativa() {
   const [numero, setNumero] = useState('');
 
   const handleFinalizar = () => {
-    // Verificando se todos os campos obrigatórios estão preenchidos
-    if (!cnpj || !nomeCooperativa || !metodoContato || !senha || !confirmarSenha || !cep || !rua || !bairro || !numero || !areaAtuacao) {
-      Alert.alert('Erro', 'Por favor, preencha todos os campos obrigatórios!');
-      return;
-    }
-
-    // Verificando se as senhas coincidem
-    if (senha !== confirmarSenha) {
-      Alert.alert('Erro', 'As senhas não coincidem!');
-      return;
-    }
-
-    router.push('/login');
+    router.push('/Cooperativa/pagina-inicial');
   };
 
   return (

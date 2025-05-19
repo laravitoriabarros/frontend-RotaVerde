@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker'; 
 
 export default function CadastroMotorista() {
   const router = useRouter();
-  
+
   const [nome, setNome] = useState('');
   const [usuario, setUsuario] = useState('');
   const [metodoContato, setMetodoContato] = useState('');
@@ -15,19 +15,6 @@ export default function CadastroMotorista() {
   const [confirmarSenha, setConfirmarSenha] = useState('');
 
   const handleCriar = () => {
-    // Verificando se todos os campos obrigatórios estão preenchidos
-    if (!nome || !usuario || !metodoContato || !cooperativa || !senha || !confirmarSenha) {
-      Alert.alert('Erro', 'Todos os campos são obrigatórios!');
-      return;
-    }
-
-    // Verificando se as senhas coincidem
-    if (senha !== confirmarSenha) {
-      Alert.alert('Erro', 'As senhas não coincidem!');
-      return;
-    }
-
-    // Se tudo estiver correto, redireciona para a página inicial do motorista
     router.push('/Motorista/pagina-inicial');
   };
 
@@ -113,7 +100,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 20,
     paddingTop: 40,
-    paddingBottom: 60, // Garantir que a barra inferior não cubra o conteúdo
+    paddingBottom: 60,
   },
   backButton: {
     position: 'absolute',

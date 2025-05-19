@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, TextInput, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  TextInput,
+  ScrollView,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -16,39 +24,34 @@ export default function UsuarioMotorista() {
   };
 
   const verRotas = () => {
-    router.push('/Usuario/rotas-diarias');
+    router.push('/Motorista/rotas-diarias');
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Cabeçalho roxo */}
-      <View style={styles.header}>
-        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
-      </View>
+      <Image source={require('../../assets/images/caminhao.png')} style={styles.headerImage} />
 
-      {/* Título e texto explicativo */}
       <View style={styles.welcomeSection}>
         <Text style={styles.welcomeTitle}>Bem-Vindo!</Text>
         <Text style={styles.welcomeText}>Vamos encontrar as rotas mais próximas de você.</Text>
       </View>
 
-      {/* Campo de pesquisa */}
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Digite o endereço"
-        value={endereco}
-        onChangeText={setEndereco}
-      />
+      <View style={styles.searchContainer}>
+        <Icon name="map-pin" size={20} color="#888" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Digite o endereço"
+          value={endereco}
+          onChangeText={setEndereco}
+        />
+      </View>
 
-      {/* Imagem do mapa */}
-      <Image source={require('../../assets/images/mapa-01.png')} style={styles.mapImage} />
+      <Image source={require('../../assets/images/mapa-rota.png')} style={styles.mapImage} />
 
-      {/* Botão "Ver rotas cadastradas" */}
       <TouchableOpacity style={styles.button} onPress={verRotas}>
         <Text style={styles.buttonText}>Ver rotas cadastradas</Text>
       </TouchableOpacity>
 
-      {/* Barra inferior */}
       <View style={styles.navBar}>
         <TouchableOpacity style={styles.navIcon} onPress={goToHome}>
           <Icon name="home" size={30} color="#2F2F2F" />
@@ -65,46 +68,52 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: 'white',
-    paddingBottom: 60, // Garantir espaço para a barra inferior
+    paddingBottom: 60,
   },
-  header: {
-    backgroundColor: '#3629B7',
-    paddingTop: 20,
-    paddingBottom: 20,
-    alignItems: 'center',
-  },
-  logo: {
-    width: 120,
-    height: 40,
-    resizeMode: 'contain',
+  headerImage: {
+    width: '100%',
+    height: 150,
+    resizeMode: 'cover',
   },
   welcomeSection: {
     marginTop: 20,
+    paddingHorizontal: 20,
     alignItems: 'center',
   },
   welcomeTitle: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: '#2F2F2F',
+    color: '#4EC063',
   },
   welcomeText: {
     fontSize: 18,
     color: '#888888',
     marginTop: 5,
+    textAlign: 'center',
   },
-  searchInput: {
-    marginTop: 20,
-    height: 50,
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F6F6F6',
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    borderRadius: 5,
+    borderRadius: 25,
+    marginTop: 20,
+    marginHorizontal: 20,
     paddingHorizontal: 15,
+    height: 50,
+  },
+  searchIcon: {
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
     fontSize: 16,
   },
   mapImage: {
     width: '100%',
-    height: 500, // Ajustado para ocupar maior altura da tela
-    resizeMode: 'contain',
+    height: 500,
+    resizeMode: 'cover',
     marginTop: 20,
   },
   button: {
