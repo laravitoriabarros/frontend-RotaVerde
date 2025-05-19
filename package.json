@@ -48,6 +48,7 @@
     "@tanstack/react-query": "^5.75.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "cpf-cnpj-validator": "^1.0.3",
     "expo": "53.0.0",
     "expo-build-properties": "^0.14.6",
     "expo-document-picker": "~13.1.5",
