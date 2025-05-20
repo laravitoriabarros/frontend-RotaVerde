@@ -20,6 +20,9 @@ export const registerCooperativaFormSchema = z.object({
     }).min(1, {
         message: 'Cooperativa é obrigatória.'
     }),
+    area_atuacao: z.array(z.string({
+        required_error: 'Área de atuação é obrigatória'
+    })).min(1, 'Área de atuação é obrigatória'),
     cnpj: z
     .string()
     .nonempty('CNPJ obrigatório.')

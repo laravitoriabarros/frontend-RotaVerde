@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView } from 'react-native';
+import { ScrollView as SV } from 'react-native-gesture-handler';
+import { Checkbox } from 'expo-checkbox'
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterCooperativaFormData, registerCooperativaFormSchema, registerCooperativaService, registerCooperativaServiceSchema } from '~/services/register/register-cooperativa-service';
+import { RegisterCooperativaFormData, registerCooperativaFormSchema, registerCooperativaService } from '~/services/register/register-cooperativa-service';
 import { ShowHiddenPassword } from '~/components/ui/show-hidden-password';
 import { maskInputCnpj, maskInputPhone } from '~/lib/masks-input';
 import { removeMask } from '~/lib/parse';
 import { useMutation } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
+import { BAIRROS } from '~/lib/constants';
 
 export default function CadastroCooperativa() {
   const router = useRouter();
@@ -23,24 +26,25 @@ export default function CadastroCooperativa() {
       senha: '',
       cnpj: '',
       nome_cooperativa: '',
-      confirmar_senha: ''
+      confirmar_senha: '',
+      area_atuacao: [],
     }
   })
 
   const registerCooperativaMutation = useMutation({
     mutationFn: registerCooperativaService,
     onSuccess: () => {
-       Toast.show({
+      Toast.show({
         type: 'success',
         text1: 'Cadastro realizado com sucesso!',
-       })
-       router.push('/signin')
+      })
+      router.push('/signin')
     },
     onError: () => {
-       Toast.show({
+      Toast.show({
         type: 'error',
         text1: 'Erro ao realizar o cadastro!',
-       })
+      })
     }
   })
 
@@ -54,10 +58,20 @@ export default function CadastroCooperativa() {
       ...userData
     }
 
-    console.log(formattedData)
-
     await registerCooperativaMutation.mutateAsync(formattedData)
   }
+
+  const isSelected = (areas_atuacao: string[], bairro: string) => {
+    return areas_atuacao?.includes(bairro);
+  };
+
+  const toggleSelection = (areas_atuacao: string[], bairro: string) => {
+    if (isSelected(areas_atuacao, bairro)) {
+      return areas_atuacao?.filter(i => i !== bairro);
+    } else {
+      return [...areas_atuacao, bairro];
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -131,6 +145,43 @@ export default function CadastroCooperativa() {
           <Text className="text-xs mb-4 text-red-500">{errors.nome_usuario?.message}</Text>
         )}
 
+        <Text style={styles.label}>
+          Áreas de atuação
+        </Text>
+        <Controller
+          name='area_atuacao'
+          control={control}
+          rules={{
+            required: 'Selecione pelo menos um bairro',
+            validate: value => value.length > 0 || 'Selecione pelo menos um bairro'
+          }}
+          render={({ field: { onChange, value } }) => (
+            <View style={styles.checkboxGroupContainer}>
+              <Text style={styles.label}>Bairros de atuação:</Text>
+              <SV className='max-h-48 flex-1'>
+                {BAIRROS.map((bairro) => (
+                <TouchableOpacity
+                  key={bairro}
+                  style={styles.checkboxContainer}
+                  onPress={() => onChange(toggleSelection(value, bairro))}
+                  activeOpacity={0.7}
+                >
+                  <Checkbox
+                    value={isSelected(value, bairro)}
+                    onValueChange={() => onChange(toggleSelection(value, bairro))}
+                    color={isSelected(value, bairro) ? '#4EC063' : undefined}
+                    style={styles.checkbox}
+                  />
+                  <Text style={styles.checkboxLabel}>{bairro}</Text>
+                </TouchableOpacity>
+              ))}
+              </SV>
+            </View>
+          )}
+        />
+        {errors.area_atuacao && (
+          <Text className="text-xs mb-4 text-red-500">{errors.area_atuacao?.message}</Text>
+        )}
 
         <Text style={styles.label}>E-mail</Text>
         <Controller
@@ -274,6 +325,31 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 15,
+  },
+  checkbox: {
+    margin: 8,
+    borderRadius: 4,
+    width: 20,
+    height: 20,
+  },
+  checkboxLabel: {
+    fontSize: 16,
+    color: '#333',
+    flex: 1,
+    marginLeft: 8,
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  checkboxGroupContainer: {
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   pickerContainer: {
     borderWidth: 1,
