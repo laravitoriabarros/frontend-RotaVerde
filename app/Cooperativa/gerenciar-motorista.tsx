@@ -34,7 +34,7 @@ export default function GerenciarMotoristas() {
   const handleConfirmarCadastro = (confirmar: boolean) => {
     setIsModalVisible(false);
     if (confirmar) {
-      router.push('/Pagina-De-Cadastro/cadastro-motorista');
+      router.push('/register-motorista');
     }
   };
 

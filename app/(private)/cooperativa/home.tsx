@@ -1,91 +1,91 @@
-import { Href, useRouter } from "expo-router";
-import { Mic } from "lucide-react-native";
-import {  Text, TextInput, TouchableOpacity, View } from "react-native";
-import { Card } from "~/components/ui/card";
-import { CooperativaMenuBar } from "../../../components/cooperativa/cooperativa-menu-bar";
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
 
-export default function Home() {
-    const router = useRouter()
+export default function TelaCooperativa() {
+  const router = useRouter();
 
-    const handleCardPress = (route: string): void => {
-        console.log(route)
-    }
+  const goToPaginaInicial = () => {
+    router.push('/Cooperativa/pagina-inicial');
+  };
 
-    const handleNavigate = (href: Href): void => {
-        router.navigate(href)
-    }
+  const goToGerenciarCaminhao = () => {
+    router.push('/Cooperativa/gerenciar-caminhao');
+  };
 
-    return (
-           <View className="flex flex-1 p-5 bg-white">
-             <Text className="text-3xl font-bold text-[#2F2F2F]">Bem-vinda, Coopvila!</Text>
-             <Text className="text-lg text-[#888888]">Encontre o vendendor mais próximo!</Text>
-             <View className="flex flex-row items-center border border-gray-300 rounded-lg p-4 my-4">
-                <TextInput className='flex-1' placeholder="Digite a localização"
-                />
-                <Mic size={20} />
-             </View>
-            <TouchableOpacity className='bg-[#4EC063] py-3.5 items-center rounded-3xl w-32'
-            onPress={() => {
-                console.log('pesquisou!')
-            }}
-            >
-            <Text className='text-white font-bold text-base'>Pesquisar</Text>
-            </TouchableOpacity>
+  const goToGerenciarRotas = () => {
+    router.push('/Cooperativa/gerenciar-rotas');
+  };
 
-             <TouchableOpacity
-               className="bg-[#F5F5F5] p-5 rounded-[10px] my-2.5 elevation-[2]"
-               onPress={() => handleCardPress('')}
-               onLongPress={() => handleNavigate('/')}
-             >
-               <Card
-                 minorDescription="Contribua com a comunidade!"
-                 title="Avaliações"
-                 description="Faça avaliações para ajudar outras pessoas a contratarem profissionais competentes!"
-                >
-                <View className="mt-5 flex-row justify-between">
-                 <TouchableOpacity
-                   className="py-2.5 px-5 bg-[#4EC063] rounded-[5px]"
-                   onPress={() => handleNavigate('/')}
-                 >
-                   <Text className="font-bold text-white">Ver histórico</Text>
-                 </TouchableOpacity>
-                 <TouchableOpacity
-                   className="py-2.5 px-5 bg-[#3629B7] rounded-[5px]"
-                   onPress={() => handleNavigate('/')}
-                 >
-                   <Text className="font-bold text-white">Criar</Text>
-                 </TouchableOpacity>
-               </View>
-               </Card>
-             </TouchableOpacity>
+  const goToPerfil = () => {
+    router.push('/Cooperativa/perfil-cooperativa');
+  };
 
-             <TouchableOpacity
-               className="bg-[#F5F5F5] p-5 rounded-[10px] my-2.5 elevation-[2]"
-               onPress={() => handleCardPress('route')}
-               onLongPress={() => handleNavigate('/')}
-             >
-                <Card
-                 minorDescription="Adquira praticidade!"
-                 title="Compra de Materiais!"
-                 description="Cadastre anúncios de compra de materiais para os catadores da sua região!"
-                >
-                <View className="mt-5 flex-row justify-between">
-                    <TouchableOpacity
-                        className="py-2.5 px-5 bg-[#4EC063] rounded-[5px]"
-                        onPress={() => handleNavigate('/')}
-                        >
-                        <Text className="font-bold text-white">Ver minhas compras</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                    className="py-2.5 px-5 bg-[#3629B7] rounded-[5px]"
-                    onPress={() => handleNavigate('/cooperativa/anuncio/cadastro')}
-                    >
-                    <Text className="font-bold text-white">Cadastrar</Text>
-                    </TouchableOpacity>
-                </View>
-              </Card>
-             </TouchableOpacity>
-            <CooperativaMenuBar />
-           </View>
-    )
+  return (
+    <View style={styles.container}>
+      {/* Cabeçalho com a logo */}
+      <View style={styles.header}>
+        <Image source={require('../../../assets/images/logo.png')} style={styles.logo} />
+      </View>
+
+      {/* Imagem de mapa */}
+      <Image source={require('../../../assets/images/mapa-cooperativa.png')} style={styles.mapImage} />
+
+      {/* Barra inferior */}
+      <View style={styles.navBar}>
+        <TouchableOpacity style={styles.navIcon} onPress={goToPaginaInicial}>
+          <Icon name="map" size={30} color="#2F2F2F" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navIcon} onPress={goToGerenciarCaminhao}>
+          <Icon name="truck" size={30} color="#2F2F2F" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navIcon} onPress={goToGerenciarRotas}>
+          <Icon name="info" size={30} color="#2F2F2F" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.navIcon} onPress={goToPerfil}>
+          <Icon name="user" size={30} color="#2F2F2F" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  header: {
+    width: '100%',
+    backgroundColor: '#3629B7',
+    paddingTop: 20,
+    paddingBottom: 20,
+    alignItems: 'center',
+  },
+  logo: {
+    width: 120,
+    height: 40,
+    resizeMode: 'contain',
+  },
+  mapImage: {
+    width: '100%',
+    height: '80%',
+    resizeMode: 'cover',
+  },
+  navBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingBottom: 20,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+  },
+  navIcon: {
+    padding: 10,
+  },
+});

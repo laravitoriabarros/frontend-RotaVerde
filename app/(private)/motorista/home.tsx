@@ -20,7 +20,7 @@ export default function UsuarioMotorista() {
   };
 
   const goToHome = () => {
-    router.push('/Motorista/pagina-inicial');
+    router.push('/(private)/motorista/home');
   };
 
   const verRotas = () => {
@@ -29,7 +29,7 @@ export default function UsuarioMotorista() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Image source={require('../../assets/images/caminhao.png')} style={styles.headerImage} />
+      <Image source={require('../../../assets/images/caminhao.png')} style={styles.headerImage} />
 
       <View style={styles.welcomeSection}>
         <Text style={styles.welcomeTitle}>Bem-Vindo!</Text>
@@ -46,7 +46,7 @@ export default function UsuarioMotorista() {
         />
       </View>
 
-      <Image source={require('../../assets/images/mapa-rota.png')} style={styles.mapImage} />
+      <Image source={require('../../../assets/images/mapa-rota.png')} style={styles.mapImage} />
 
       <TouchableOpacity style={styles.button} onPress={verRotas}>
         <Text style={styles.buttonText}>Ver rotas cadastradas</Text>
