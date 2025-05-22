@@ -1,7 +1,7 @@
 import '~/global.css';
 
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Slot } from 'expo-router'; // 'Stack' was replaced with 'Slot'
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { Platform, Text, ViewProps } from 'react-native';
@@ -10,9 +10,9 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { TanStackProvider } from '~/providers/tanstack-provider';
+import { ImoveisProvider } from '~/providers/Imoveis-contexts';
 import type { FC } from 'react';
 
-// ✅ Tipagem explícita para ThemeToggle
 let ThemeToggle: FC<ViewProps> | null = null;
 
 try {
@@ -33,7 +33,6 @@ const DARK_THEME: Theme = {
 };
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
@@ -57,25 +56,15 @@ export default function RootLayout() {
   if (!isColorSchemeLoaded) return null;
 
   return (
-    <>
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-     <TanStackProvider>
-      <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            title: 'Starter Base',
-            // ✅ Evita crash no header se ThemeToggle falhar
-            headerRight: () =>
-              ThemeToggle ? <ThemeToggle /> : <Text style={{ marginRight: 10 }}>⚙️</Text>,
-          }}
-        />
-      </Stack>
-    </TanStackProvider>
-   </ThemeProvider>
-  <PortalHost />
-  </>
+      <TanStackProvider>
+        <ImoveisProvider>
+          <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+          <Slot /> {/* The Slot component will render the current route */}
+          <PortalHost />
+        </ImoveisProvider>
+      </TanStackProvider>
+    </ThemeProvider>
   );
 }
 
