@@ -1,7 +1,7 @@
 import '~/global.css';
 
 import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
-import { Slot } from 'expo-router'; // 'Stack' was replaced with 'Slot'
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { Platform, Text, ViewProps } from 'react-native';
@@ -56,15 +56,27 @@ export default function RootLayout() {
   if (!isColorSchemeLoaded) return null;
 
   return (
+    <>
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <TanStackProvider>
-        <ImoveisProvider>
-          <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-          <Slot /> {/* The Slot component will render the current route */}
-          <PortalHost />
-        </ImoveisProvider>
-      </TanStackProvider>
-    </ThemeProvider>
+     <TanStackProvider>
+      <ImoveisProvider>
+      <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+      <Stack>
+        <Stack.Screen
+          name="index"
+          options={{
+            title: 'Starter Base',
+            // ✅ Evita crash no header se ThemeToggle falhar
+            headerRight: () =>
+              ThemeToggle ? <ThemeToggle /> : <Text style={{ marginRight: 10 }}>⚙️</Text>,
+          }}
+        />
+      </Stack>
+      </ImoveisProvider>
+    </TanStackProvider>
+   </ThemeProvider>
+  <PortalHost />
+  </>
   );
 }
 
