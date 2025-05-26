@@ -19,17 +19,16 @@ export default function RootLayout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <TanStackProvider>
           <ImoveisProvider>
-            <Stack>
-              <Stack.Screen
-                name="index"
-                options={{
-                  title: 'Rota Verde',
-                }}
-              />
-            </Stack>
-          </ImoveisProvider>
+          <Stack>
+            <Stack.Screen
+              name="index"
+              options={{
+                title: 'Rota Verde',
+              }}
+            />
+          </Stack>
+        </ImoveisProvider>
         </TanStackProvider>
-
         <Toast
           autoHide={true}
           visibilityTime={3000}
