@@ -6,9 +6,9 @@ import { TanStackProvider } from '~/providers/tanstack-provider';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
+import { ImoveisProvider } from '~/providers/Imoveis-contexts';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
@@ -17,6 +17,7 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <GestureHandlerRootView>
         <TanStackProvider>
+          <ImoveisProvider>
           <Stack>
             <Stack.Screen
               name="index"
@@ -26,6 +27,7 @@ export default function RootLayout() {
             />
           </Stack>
         </TanStackProvider>
+        </ImoveisProvider>
         <Toast
           autoHide={true}
           visibilityTime={3000}
@@ -34,3 +36,4 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+

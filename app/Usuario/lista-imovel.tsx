@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import {useImoveis} from '~/providers/Imoveis-contexts';
 import {
   View,
   Text,
@@ -22,21 +23,9 @@ export default function MeusImoveis() {
   const router = useRouter();
   const [modoExclusao, setModoExclusao] = useState(false);
   const [selecionados, setSelecionados] = useState<number[]>([]);
-  const [imoveis, setImoveis] = useState<Imovel[]>([
-    { id: 1, nome: 'Casa 01', endereco: 'Antares - Rua Sol', status: 'Lixo Reciclável Coleta 1234' },
-    { id: 2, nome: 'Víctor Oliveira', endereco: 'Farol - Rua Estrela', status: 'Não Reciclável Coleta 1234' },
-    { id: 3, nome: 'Loja 01', endereco: 'Benedito Bentes', status: 'Lixo Reciclável Coleta 1234' },
-    { id: 4, nome: 'Fábrica 01', endereco: 'Cruz das Almas', status: 'Lixo Reciclável Coleta 1234' },
-  ]);
+  const { imoveis, setImoveis } = useImoveis();
 
-  const toggleSelecionado = (id: number) => {
-    if (selecionados.includes(id)) {
-      setSelecionados(selecionados.filter((i) => i !== id));
-    } else {
-      setSelecionados([...selecionados, id]);
-    }
-  };
-
+ 
   const confirmarExclusao = () => {
     Alert.alert(
       'Confirmar exclusão',
