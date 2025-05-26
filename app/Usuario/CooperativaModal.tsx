@@ -1,19 +1,19 @@
 import React from 'react';
-import { Button, Image, Modal, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
-// Type for cooperativa
-export type Cooperativa = {
-  id: number;
-  nome: string;
-  areaDeInfluencia: string[];
-  localizacao: {
-    endereco: string;
+export interface Cooperativa {
+  id: string;
+  nome_usuario: string;
+  nome_cooperativa: string;
+  area_atuacao: string[];
+  location: {
     latitude: number;
     longitude: number;
   };
-  materiaisReciclaveis: string[];
-  image?: any; // require() or uri
-};
+  endereco: {
+    bairros_atendidos: string[];
+  };
+}
 
 interface CooperativaModalProps {
   visible: boolean;
@@ -21,43 +21,90 @@ interface CooperativaModalProps {
   cooperativa: Cooperativa | null;
 }
 
-const CooperativaModal: React.FC<CooperativaModalProps> = ({ visible, onClose, cooperativa }) => (
-  <Modal
-    visible={visible}
-    transparent={true}
-    animationType="slide"
-    onRequestClose={onClose}
-  >
-    <View style={{
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.5)'
-    }}>
-      <View style={{
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 10,
-        minWidth: 280,
-        alignItems: 'center'
-      }}>
-        {cooperativa && (
-          <>
-            <Image
-              source={cooperativa.image}
-              style={{ width: 80, height: 80, borderRadius: 40, marginBottom: 10 }}
-              resizeMode="cover"
-            />
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>{cooperativa.nome}</Text>
-            <Text style={{ marginBottom: 5 }}>Endereço: {cooperativa.localizacao.endereco}</Text>
-            <Text style={{ marginBottom: 5 }}>Área de influência: {cooperativa.areaDeInfluencia.join(', ')}</Text>
-            <Text style={{ marginBottom: 5 }}>Coletamos: {cooperativa.materiaisReciclaveis.join(', ')}</Text>
-          </>
-        )}
-        <Button title="Fechar" onPress={onClose} />
-      </View>
-    </View>
-  </Modal>
-);
+export default function CooperativaModal({ visible, onClose, cooperativa }: CooperativaModalProps) {
+  if (!cooperativa) return null;
 
-export default CooperativaModal;
+  return (
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={onClose}
+    >
+      <View style={styles.modalContainer}>
+        <View style={styles.modalContent}>
+          <Text style={styles.title}>{cooperativa.nome_cooperativa}</Text>
+          <Text style={styles.subtitle}>Responsável: {cooperativa.nome_usuario}</Text>
+          <Text style={styles.sectionTitle}>Áreas de Atuação:</Text>
+          <View style={styles.areasContainer}>
+            {cooperativa.area_atuacao.map((area, index) => (
+              <Text key={index} style={styles.areaItem}>
+                • {area}
+              </Text>
+            ))}
+          </View>
+          <Text style={styles.sectionTitle}>Bairros Atendidos:</Text>
+          <View style={styles.areasContainer}>
+            {cooperativa.endereco.bairros_atendidos.map((bairro, index) => (
+              <Text key={index} style={styles.areaItem}>
+                • {bairro}
+              </Text>
+            ))}
+          </View>
+          <Text style={styles.closeButton} onPress={onClose}>
+            Fechar
+          </Text>
+        </View>
+      </View>
+    </Modal>
+  );
+}
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    maxHeight: '80%',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#2F2F2F',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#2F2F2F',
+  },
+  areasContainer: {
+    marginBottom: 20,
+  },
+  areaItem: {
+    fontSize: 16,
+    color: '#666',
+    marginBottom: 5,
+  },
+  closeButton: {
+    fontSize: 16,
+    color: '#4EC063',
+    textAlign: 'center',
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+  },
+});
