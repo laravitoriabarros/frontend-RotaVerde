@@ -26,14 +26,14 @@ export default function PaginaDeEntrada() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#3629B7' }]}
-          onPress={() => router.push('/login')}
+          onPress={() => router.push('/signin')}
         >
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#4EC063' }]}
-          onPress={() => router.push('/Pagina-De-Cadastro/cadastro-parte1')}
+          onPress={() => router.push('/register')}
         >
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>

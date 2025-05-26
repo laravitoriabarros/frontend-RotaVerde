@@ -1,18 +1,53 @@
-export const NAV_THEME = {
-  light: {
-    background: 'hsl(0 0% 100%)', // background
-    border: 'hsl(240 5.9% 90%)', // border
-    card: 'hsl(0 0% 100%)', // card
-    notification: 'hsl(0 84.2% 60.2%)', // destructive
-    primary: 'hsl(240 5.9% 10%)', // primary
-    text: 'hsl(240 10% 3.9%)', // foreground
-  },
-  dark: {
-    background: 'hsl(240 10% 3.9%)', // background
-    border: 'hsl(240 3.7% 15.9%)', // border
-    card: 'hsl(240 10% 3.9%)', // card
-    notification: 'hsl(0 72% 51%)', // destructive
-    primary: 'hsl(0 0% 98%)', // primary
-    text: 'hsl(0 0% 98%)', // foreground
-  },
-};
+export const BAIRROS: string[] = [
+  "Antares",
+  "Barro Duro",
+  "Bebedouro",
+  "Benedito Bentes",
+  "Bom Parto",
+  "Canaã",
+  "Centro",
+  "Chã da Jaqueira",
+  "Chã de Bebedouro",
+  "Cidade Universitária",
+  "Clima Bom",
+  "Cruz das Almas",
+  "Farol",
+  "Feitosa",
+  "Fernão Velho",
+  "Garça Torta",
+  "Gruta de Lourdes",
+  "Guaxuma",
+  "Ipioca",
+  "Jacarecica",
+  "Jacintinho",
+  "Jaraguá",
+  "Jardim Petrópolis",
+  "Jatiúca",
+  "Levada",
+  "Mangabeiras",
+  "Martins",
+  "Mutange",
+  "Ouro Preto",
+  "Pajuçara",
+  "Petrópolis",
+  "Pinheiro",
+  "Pitanguinha",
+  "Ponta da Terra",
+  "Ponta Grossa",
+  "Ponta Verde",
+  "Pontal da Barra",
+  "Poço",
+  "Prado",
+  "Riacho Doce",
+  "Rio Novo",
+  "Santa Amélia",
+  "Santa Lúcia",
+  "Santo Amaro",
+  "Santos Dumont",
+  "São Jorge",
+  "Serraria",
+  "Tabuleiro do Martins",
+  "Trapiche da Barra",
+  "Vergel do Lago",
+  "Vila Brejal"
+];

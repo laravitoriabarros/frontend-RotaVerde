@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function TelaVerificacao() {
   const router = useRouter();
-  
+
   const [code, setCode] = useState<string[]>(["", "", "", ""]);
-  const [timer, setTimer] = useState(30); // Iniciar com 30 segundos
+  const [timer, setTimer] = useState(30);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   useEffect(() => {
-    let interval: number | undefined; // Garantir que a variável é opcional inicialmente
+    let interval: number | undefined;
 
     if (isButtonDisabled && timer > 0) {
       interval = window.setInterval(() => {
@@ -19,14 +19,14 @@ export default function TelaVerificacao() {
       }, 1000);
     } else if (timer === 0) {
       setIsButtonDisabled(false);
-      if (interval) { // Garantir que o intervalo foi definido
+      if (interval) {
         window.clearInterval(interval);
       }
     }
 
     return () => {
       if (interval) {
-        window.clearInterval(interval); // Limpar o intervalo ao sair do efeito
+        window.clearInterval(interval);
       }
     };
   }, [isButtonDisabled, timer]);
@@ -47,8 +47,8 @@ export default function TelaVerificacao() {
 
   const handleReenviar = () => {
     if (!isButtonDisabled) {
-      setIsButtonDisabled(true); // Desabilitar o botão
-      setTimer(30); // Reiniciar o cronômetro
+      setIsButtonDisabled(true);
+      setTimer(30);
       Alert.alert("Código reenviado!");
     }
   };
@@ -58,10 +58,16 @@ export default function TelaVerificacao() {
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
         <Icon name="arrow-left" size={30} color="#4EC063" />
       </TouchableOpacity>
-      
+
+      <Image
+        source={require('../assets/images/senha02.png')}
+        style={styles.image}
+        resizeMode="contain"
+      />
+
       <Text style={styles.title}>Hora de Verificar!</Text>
       <Text style={styles.subtitle}>Digite abaixo o código enviado para você!</Text>
-      
+
       <View style={styles.codeContainer}>
         {code.map((digit, index) => (
           <TextInput
@@ -107,6 +113,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
     left: 20,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,

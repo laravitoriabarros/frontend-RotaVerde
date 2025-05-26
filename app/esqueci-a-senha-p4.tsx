@@ -6,19 +6,19 @@ export default function TelaSucesso() {
   const router = useRouter();
 
   const handlePress = () => {
-    router.push('/login'); 
+    router.push('/signin');
   };
 
   return (
     <View style={styles.container}>
-      <Image 
-        source={require('../assets/images/tudo-certo.png')} 
+      <Image
+        source={require('../assets/images/tudo-certo.png')}
         style={styles.image}
       />
       <Text style={styles.title}>Tudo certo!</Text>
       <Text style={styles.subtitle}>Você conseguiu criar sua nova senha!</Text>
       <Text style={styles.subtitle}>Agora entre em sua conta e vá aproveitar tudo que o app tem pra oferecer!</Text>
-      
+
       <TouchableOpacity style={styles.button} onPress={handlePress}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
