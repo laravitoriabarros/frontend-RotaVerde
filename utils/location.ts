@@ -5,9 +5,23 @@ interface Coordinates {
   longitude: number;
 }
 
+async function requestPermissions() {
+  const { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== 'granted') {
+    alert('Permissão para acessar localização negada!');
+    return false;
+  }
+  return true;
+}
 // Sua função existente
 export async function getCoordinatesFromAddress(address: string): Promise<Coordinates | null> {
   try {
+    const hasPermission = await requestPermissions();
+    if (!hasPermission) {
+      alert('Permissão para acessar localização negada!');
+      return null;
+    }
+
     const geocodedLocation = await Location.geocodeAsync(address);
 
     if (geocodedLocation.length > 0) {
