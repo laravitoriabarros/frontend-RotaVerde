@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,140 +8,221 @@ import {
   ScrollView,
   Image,
   Alert,
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import Icon from 'react-native-vector-icons/Feather';
-import * as Location from 'expo-location';
-import { Picker } from '@react-native-picker/picker';
+} from "react-native";
+import { useRouter } from "expo-router";
+import Icon from "react-native-vector-icons/Feather";
+import MapView, { Marker } from "react-native-maps";
+import { Picker } from "@react-native-picker/picker";
+import { useMutation } from "@tanstack/react-query";
+import { getAddressFromCoordinates } from '~/utils/location';
 
 export default function CadastrarImovel() {
   const router = useRouter();
 
-  const [nome, setNome] = useState('');
-  const [tipoImovel, setTipoImovel] = useState('');
-  const [lixoReciclavel, setLixoReciclavel] = useState('');
-  const [localizacao, setLocalizacao] = useState('');
+  const [nome, setNome] = useState("");
+  const [tipoImovel, setTipoImovel] = useState("");
+  const [lixoReciclavel, setLixoReciclavel] = useState("");
+  const [localizacao, setLocalizacao] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [mostrarMapa, setMostrarMapa] = useState(false);
 
   const handleGoBack = () => {
     router.back();
   };
 
-  const handleSubmit = () => {
-    console.log({
-      nome,
-      tipoImovel,
-      lixoReciclavel,
-      localizacao,
+  const handleMapPress = (event: { nativeEvent: { coordinate: { latitude: number; longitude: number } } }) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setLocalizacao({ latitude, longitude });
+  };
+
+  const cadastrarImovel = async (dados: any) => {
+    const response = await fetch(`http://127.0.0.1:8000/cadastrar_residencias/uid-de-teste`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados),
     });
 
-    router.push('/Usuario/final-cad-imovel');
-  };
-
-  const obterLocalizacao = async () => {
-    try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permissão negada', 'Não foi possível acessar a localização.');
-        return;
-      }
-
-      const location = await Location.getCurrentPositionAsync({});
-      const [address] = await Location.reverseGeocodeAsync(location.coords);
-
-      if (address) {
-        const texto = `${address.street ?? ''}, ${address.subregion ?? ''} - ${address.city ?? ''}`;
-        setLocalizacao(texto.trim());
-      }
-    } catch (error) {
-      Alert.alert('Erro', 'Não foi possível obter a localização.');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ message: "Erro desconhecido" }));
+      throw new Error(errorData.message || "Erro ao cadastrar o imóvel");
     }
+
+    return response.json();
   };
 
+  const mutation = useMutation({
+    mutationFn: cadastrarImovel,
+    onSuccess: () => {
+      Alert.alert("Sucesso!", "Imóvel cadastrado com sucesso.");
+      router.push("/Usuario/final-cad-imovel"); 
+    },
+    onError: (error) => {
+      Alert.alert("Erro", `Não foi possível cadastrar o imóvel: ${error.message}`);
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!nome || !tipoImovel || !localizacao) {
+      Alert.alert("Atenção", "Por favor, preencha todos os campos obrigatórios (Nome, Tipo de Imóvel e Localização).");
+      return;
+    }
+    if (!lixoReciclavel) {
+      Alert.alert("Atenção", "Por favor, informe se há lixo reciclável para coleta.");
+      return;
+    }
+    
+    const dados = {
+      nome, 
+      tipoImovel,
+      lixoReciclavel: lixoReciclavel === "sim" ? true : false, 
+      endereco: {
+        logradouro: "Rua Exemplo",
+        numero: "123",
+        bairro: "Centro",
+        cidade: "São Paulo",
+        estado: "SP", 
+        cep: "00000-000",
+      },
+      location: {
+        latitude: localizacao.latitude,
+        longitude: localizacao.longitude,
+      },
+    };
+
+    mutation.mutate(dados);
+  };
+
+ 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-          <Icon name="arrow-left" size={24} color="#4EC063" />
-        </TouchableOpacity>
-      </View>
+      {mostrarMapa ? (
+        <View style={{ flex: 1 }}>
+          <MapView
+            style={styles.fullScreenMap}
+            initialRegion={{
+              latitude: localizacao?.latitude || -9.6498487, 
+              longitude: localizacao?.longitude || -35.7089492,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+            provider="google"
+            onPress={handleMapPress}
+          >
+            {localizacao && (
+              <Marker
+                coordinate={localizacao}
+                title="Local selecionado"
+                description="Toque para mover o pin" // Adicione uma descrição útil
+              />
+            )}
+          </MapView>
 
-      <Image source={require('../../assets/images/web.png')} style={styles.image} />
-
-      <Text style={styles.title}>Vamos começar!</Text>
-
-      <ScrollView contentContainerStyle={styles.form}>
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Nome</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite como quer chamar seu imóvel"
-            value={nome}
-            onChangeText={setNome}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Escolha o tipo de imóvel</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={tipoImovel}
-              onValueChange={(itemValue) => setTipoImovel(itemValue)}
-              style={styles.picker}
+          {localizacao && (
+            <TouchableOpacity
+              onPress={() => {
+                setMostrarMapa(false);
+                Alert.alert("Localização Capturada", `Latitude: ${localizacao.latitude.toFixed(6)}, Longitude: ${localizacao.longitude.toFixed(6)}`);
+              }}
+              style={styles.confirmMapButton}
             >
-              <Picker.Item label="Clique aqui para escolher" value="" />
-              <Picker.Item label="Residência" value="residencia" />
-              <Picker.Item label="Comércio" value="comercio" />
-              <Picker.Item label="Estabelecimento público" value="publico" />
-            </Picker>
-          </View>
-        </View>
+              <Text style={styles.confirmMapText}>Confirmar Localização</Text>
+            </TouchableOpacity>
+          )}
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Tem lixo reciclável para coleta?</Text>
-          <View style={styles.pickerContainer}>
-            <Picker
-              selectedValue={lixoReciclavel}
-              onValueChange={(itemValue) => setLixoReciclavel(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="Clique aqui para escolher" value="" />
-              <Picker.Item label="Sim" value="sim" />
-              <Picker.Item label="Não" value="nao" />
-            </Picker>
-          </View>
+          <TouchableOpacity
+            onPress={() => {
+              setLocalizacao(null); 
+              setMostrarMapa(false);
+            }}
+            style={styles.cancelMapButton}
+          >
+            <Text style={styles.cancelMapText}>Cancelar</Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Adicione a Localização</Text>
-          <View style={styles.inputWithIcon}>
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              placeholder="Digite a localização do imóvel"
-              value={localizacao}
-              onChangeText={setLocalizacao}
-            />
-            <TouchableOpacity onPress={obterLocalizacao} style={styles.iconButton}>
-              <Icon name="map-pin" size={20} color="#3629B7" />
+      ) : (
+        
+        <>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+              <Icon name="arrow-left" size={24} color="#4EC063" />
             </TouchableOpacity>
           </View>
-        </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Criar</Text>
-        </TouchableOpacity>
-      </ScrollView>
+          <Image source={require("../../assets/images/web.png")} style={styles.image} />
+
+          <Text style={styles.title}>Vamos começar!</Text>
+
+          <ScrollView contentContainerStyle={styles.form}>
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Nome</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Digite como quer chamar seu imóvel"
+                value={nome}
+                onChangeText={setNome}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Escolha o tipo de imóvel</Text>
+              <View style={styles.pickerContainer}>
+                <Picker selectedValue={tipoImovel} onValueChange={setTipoImovel} style={styles.picker}>
+                  <Picker.Item label="Clique aqui para escolher" value="" />
+                  <Picker.Item label="Residência" value="residencia" />
+                  <Picker.Item label="Comércio" value="comercio" />
+                  <Picker.Item label="Estabelecimento público" value="publico" />
+                </Picker>
+              </View>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Tem lixo reciclável para coleta?</Text>
+              <View style={styles.pickerContainer}>
+                <Picker selectedValue={lixoReciclavel} onValueChange={setLixoReciclavel} style={styles.picker}>
+                  <Picker.Item label="Clique aqui para escolher" value="" />
+                  <Picker.Item label="Sim" value="sim" />
+                  <Picker.Item label="Não" value="nao" />
+                </Picker>
+              </View>
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Adicione a Localização</Text>
+              <View style={styles.inputWithIcon}>
+                <TextInput
+                  style={[styles.input, { flex: 1 }]}
+                  placeholder="Toque no ícone para abrir o mapa"
+                  value={localizacao ? `Lat: ${localizacao.latitude.toFixed(4)}, Lon: ${localizacao.longitude.toFixed(4)}` : "Nenhuma localização selecionada"}
+                  editable={false}
+                />
+                <TouchableOpacity onPress={() => setMostrarMapa(true)} style={styles.iconButton}>
+                  <Icon name="map-pin" size={24} color="#3629B7" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleSubmit}
+              disabled={mutation.isPending}
+            >
+              <Text style={styles.buttonText}>{mutation.isPending ? "Salvando..." : "Criar"}</Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </>
+      )}
     </View>
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     paddingTop: 40,
   },
   header: {
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
     paddingLeft: 20,
     paddingBottom: 20,
   },
@@ -151,15 +232,15 @@ const styles = StyleSheet.create({
   image: {
     width: 100,
     height: 100,
-    alignSelf: 'center',
-    resizeMode: 'contain',
+    alignSelf: "center",
+    resizeMode: "contain",
     marginBottom: 10,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#3629B7',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#3629B7",
+    textAlign: "center",
     marginBottom: 20,
   },
   form: {
@@ -170,51 +251,87 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: '#2F2F2F',
+    color: "#2F2F2F",
     marginBottom: 5,
   },
   input: {
     height: 50,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     borderRadius: 5,
     paddingHorizontal: 15,
     fontSize: 16,
-    color: '#2F2F2F',
+    color: "#2F2F2F",
   },
   inputWithIcon: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconButton: {
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderLeftWidth: 0,
-    borderTopRightRadius: 5,
-    borderBottomRightRadius: 5,
-    backgroundColor: '#F4F4F4',
+    padding: 10,
+    marginLeft: 5,
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     borderRadius: 5,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   picker: {
     height: 50,
-    width: '100%',
+    width: "100%",
   },
   button: {
-    backgroundColor: '#3629B7',
+    backgroundColor: "#3629B7",
     paddingVertical: 15,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 18,
+  },
+  fullScreenMap: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 999,
+  },
+  confirmMapButton: {
+    position: "absolute",
+    bottom: 80,
+    left: 20,
+    right: 20,
+    backgroundColor: "#3629B7",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  confirmMapText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  cancelMapButton: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: "#ccc",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    zIndex: 1000,
+  },
+  cancelMapText: {
+    color: "#333",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

@@ -10,9 +10,9 @@ import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { setAndroidNavigationBar } from '~/lib/android-navigation-bar';
 import { TanStackProvider } from '~/providers/tanstack-provider';
+import { ImoveisProvider } from '~/providers/Imoveis-contexts';
 import type { FC } from 'react';
 
-// ✅ Tipagem explícita para ThemeToggle
 let ThemeToggle: FC<ViewProps> | null = null;
 
 try {
@@ -33,7 +33,6 @@ const DARK_THEME: Theme = {
 };
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
@@ -60,6 +59,7 @@ export default function RootLayout() {
     <>
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
      <TanStackProvider>
+      <ImoveisProvider>
       <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
       <Stack>
         <Stack.Screen
@@ -72,6 +72,7 @@ export default function RootLayout() {
           }}
         />
       </Stack>
+      </ImoveisProvider>
     </TanStackProvider>
    </ThemeProvider>
   <PortalHost />

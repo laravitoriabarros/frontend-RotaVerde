@@ -4,12 +4,17 @@ import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from '
 import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/Feather';
 import CooperativaModal, { Cooperativa } from './CooperativaModal';
+import { useImoveis } from '~/providers/Imoveis-contexts'; 
 
 export default function TelaMapa() {
   const router = useRouter();
   const [modalVisible, setModalVisible] = React.useState(false);
   const [modalCooperativaVisible, setModalCooperativaVisible] = React.useState(false);
   const [selectedCooperativa, setSelectedCooperativa] = React.useState<Cooperativa | null>(null);
+  const [selectedImovel, setSelectedImovel] = React.useState<any>(null); // Estado para o imóvel selecionado
+
+  // Hook para acessar os imóveis do contexto
+  const { imoveis } = useImoveis();
 
   // vai fazer o fetch das cooperativas do backend, por enquanto esses sao os dados que viriam
   const cooperativas = [
@@ -25,21 +30,22 @@ export default function TelaMapa() {
       materiaisReciclaveis: ['latinhas', 'garrafas pet', 'papel'],
       image: require('../../assets/images/perfil-roxo-homem.png'),
     },
-    // Adicione mais cooperativas aqui no futuro
+
   ];
 
-  const handleNavigate = () => {
+  const handleImovelPress = (imovel: any) => {
+    setSelectedImovel(imovel);
     setModalVisible(true);
   };
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho com a logo */}
+ 
       <View style={styles.header}>
         <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
       </View>
 
-      {/* Modal for property info */}
+   
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -60,8 +66,13 @@ export default function TelaMapa() {
             alignItems: 'center'
           }}>
             <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Imóvel Selecionado</Text>
-            <Text>Maceió, Alagoas</Text>
-            {/* Add more property info here if you want */}
+            {selectedImovel && (
+              <>
+                <Text>Nome: {selectedImovel.nome}</Text>
+                <Text>Endereço: {selectedImovel.endereco}</Text>
+                <Text>Status: {selectedImovel.status}</Text>
+              </>
+            )}
             <Button title="Fechar" onPress={() => setModalVisible(false)} />
           </View>
         </View>
@@ -76,26 +87,31 @@ export default function TelaMapa() {
         cooperativa={selectedCooperativa}
       />
 
-      {/* Mapa real */}
-      {/* TODO: initial region vai ser a localização do imóvel selecionado */}
+      
       <MapView
         style={styles.map}
         initialRegion={{
-          latitude: -9.6498487,
-          longitude: -35.7089492,
+          latitude: -9.6498487, // Latitude padrão (ex: Maceió, Alagoas)
+          longitude: -35.7089492, // Longitude padrão
           latitudeDelta: 0.0922,
           longitudeDelta: 0.0421,
         }}
         provider="google"
       >
-        {/* User's property marker */}
-        <Marker
-          coordinate={{ latitude: -9.6498487, longitude: -35.7089492 }}
-          title="Maceió"
-          description="Maceió, Alagoas"
-          onPress={handleNavigate}
-        />
-        {/* Cooperativa marker (green) */}
+        {imoveis.filter(imovel => imovel.lixoParaColetaHoje === true)
+        .map((imovel) => (
+          
+          <Marker
+            key={imovel.id}
+            coordinate={{ latitude: imovel.latitude, longitude: imovel.longitude }}
+            title={imovel.nome}
+            description={imovel.endereco}
+            pinColor="#2F2F2F" 
+            onPress={() => handleImovelPress(imovel)}
+          />
+        ))}
+
+      
         {cooperativas.map((coop) => (
           <Marker
             key={coop.id}
@@ -170,11 +186,11 @@ const styles = StyleSheet.create({
   },
   greenArea: {
     position: 'absolute',
-    left: 50,  // Ajuste o valor conforme a área verde do mapa
-    top: 120,  // Ajuste o valor conforme a área verde do mapa
-    width: 100, // Ajuste o tamanho da área
-    height: 100, // Ajuste o tamanho da área
-    backgroundColor: 'transparent', // Torna a área invisível, mas clicável
+    left: 50,
+    top: 120,
+    width: 100,
+    height: 100,
+    backgroundColor: 'transparent',
   },
   infoText: {
     fontSize: 16,
@@ -186,12 +202,12 @@ const styles = StyleSheet.create({
   navBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingBottom: 10,  // Ajuste do padding para a barra inferior
+    paddingBottom: 10,
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'white', // Barra inferior com fundo branco
+    backgroundColor: 'white',
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
   },

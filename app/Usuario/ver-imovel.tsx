@@ -1,38 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-  Alert,
-  ScrollView,
+  View, Text, TouchableOpacity, StyleSheet,
+  TextInput, Alert, ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
+import { useImoveis } from '~/providers/Imoveis-contexts'; 
+
 
 export default function VerImovel() {
   const router = useRouter();
+  const { imoveis, setImoveis } = useImoveis();
 
+  // Vamos editar o imóvel com id = 1 (exemplo)
+  const imovel = imoveis.find(i => i.id === 1);
+
+  // Estados locais para edição
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [nome, setNome] = useState('Casa 01');
-  const [tipo, setTipo] = useState('Residencial');
-  const [endereco, setEndereco] = useState('Antares - Rua Sol');
+  const [nome, setNome] = useState(imovel?.nome ?? '');
+  const [tipo, setTipo] = useState('Residencial'); // Seu modelo não tem tipo, você pode adicionar
+  const [endereco, setEndereco] = useState(imovel?.endereco ?? '');
   const [lixoHoje, setLixoHoje] = useState('Sim');
 
+ 
+  useEffect(() => {
+  if (imovel) {
+    setNome(imovel.nome);
+    setEndereco(imovel.endereco);
+    setLixoHoje(imovel.lixoParaColetaHoje ? 'Sim' : 'Não');
+  }
+}, [imovel]);
+
   const handleGoBack = () => {
+  if (router.canGoBack()) {
     router.back();
-  };
+  } else {
+    router.push('/');
+  }
+};
 
   const salvarPopup = () => {
     Alert.alert('Tudo certo!', 'Dados salvos com sucesso!');
   };
 
+  const handleSalvarLixoHoje = () => {
+    if (!imovel) return;
+
+    const imoveisAtualizados = imoveis.map(i =>
+        i.id === imovel.id
+            ? { ...i, lixoParaColetaHoje: lixoHoje === 'Sim' } // <-- ATUALIZA O NOVO CAMPO
+            : i
+    );
+    setImoveis(imoveisAtualizados);
+    Alert.alert('Sucesso!', 'Informação de coleta atualizada!');
+};
+
   const handleSalvarEdicao = () => {
+    if (!imovel) return;
+
+    // Atualiza imóvel no contexto
+    const imoveisAtualizados = imoveis.map(i =>
+      i.id === imovel.id
+        ? { ...i, nome, endereco /* , tipo se existir */ }
+        : i
+    );
+
+    <View style={styles.dropdownContainer}>
+      <Text style={styles.label}>Hoje tem lixo reciclável para coleta?</Text>
+      <View style={styles.pickerWrapper}>
+        <Picker
+            selectedValue={lixoHoje}
+            onValueChange={setLixoHoje} // Permita que o Picker mude o estado local
+            style={styles.picker}
+            enabled={!modoEdicao} // Mantenha disabled se estiver em modo de edição de outros campos
+        >
+            <Picker.Item label="Sim" value="Sim" />
+            <Picker.Item label="Não" value="Não" />
+        </Picker>
+      </View>
+      <TouchableOpacity
+        style={styles.smallButton}
+        onPress={handleSalvarLixoHoje} // <-- CHAMA A NOVA FUNÇÃO DE SALVAR
+        disabled={modoEdicao}
+      >
+        <Text style={styles.smallButtonText}>Salvar</Text>
+      </TouchableOpacity>
+    </View>
+
+    setImoveis(imoveisAtualizados);
     setModoEdicao(false);
     Alert.alert('Tudo certo!', 'Dados salvos com sucesso!');
   };
+
+  if (!imovel) {
+    return (
+      <View style={styles.container}>
+        <Text>Imóvel não encontrado.</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -103,24 +170,27 @@ export default function VerImovel() {
           <Text style={styles.dividerText}>Informações de Hoje</Text>
         </View>
 
-        {/* Removido a parte de coleta de lixo */}
         <View style={styles.dropdownContainer}>
           <Text style={styles.label}>Hoje tem lixo reciclável para coleta?</Text>
-          <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={lixoHoje}
-              onValueChange={modoEdicao ? () => {} : setLixoHoje}
-              style={styles.picker}
-              enabled={!modoEdicao}
-            >
-              <Picker.Item label="Sim" value="Sim" />
-              <Picker.Item label="Não" value="Não" />
-            </Picker>
-          </View>
-          <TouchableOpacity style={styles.smallButton} onPress={salvarPopup} disabled={modoEdicao}>
-            <Text style={styles.smallButtonText}>Salvar</Text>
-          </TouchableOpacity>
-        </View>
+            <View style={styles.pickerWrapper}>
+              <Picker
+                selectedValue={lixoHoje}
+                onValueChange={setLixoHoje} 
+                style={styles.picker}
+                enabled={!modoEdicao} 
+              >
+                <Picker.Item label="Sim" value="Sim" />
+                <Picker.Item label="Não" value="Não" />
+              </Picker>
+            </View>
+    <TouchableOpacity
+        style={styles.smallButton}
+        onPress={handleSalvarLixoHoje} // <-- CHAMA A NOVA FUNÇÃO DE SALVAR
+        disabled={modoEdicao}
+    >
+        <Text style={styles.smallButtonText}>Salvar</Text>
+    </TouchableOpacity>
+    </View>
       </ScrollView>
 
       <View style={styles.navBar}>
@@ -141,6 +211,7 @@ export default function VerImovel() {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'white' },
   header: {
@@ -150,7 +221,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     alignItems: 'center',
   },
-  backButton: { position: 'absolute', left: 20, top: 20, padding: 10 },
+  backButton: { position: 'absolute', left: 20, top: 20, padding: 25 },
   houseIcon: { marginTop: 10 },
   imovelName: {
     fontSize: 24,
@@ -158,6 +229,7 @@ const styles = StyleSheet.create({
     color: '#2F2F2F',
     textAlign: 'center',
     marginTop: 20,
+    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   imovelAddress: {
     fontSize: 16,
