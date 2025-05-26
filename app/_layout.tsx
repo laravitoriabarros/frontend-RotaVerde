@@ -7,6 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { ImoveisProvider } from '~/providers/Imoveis-contexts';
+import { style } from 'twrnc';
 
 export {
   ErrorBoundary,
@@ -15,7 +16,7 @@ export {
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <GestureHandlerRootView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <TanStackProvider>
           <ImoveisProvider>
           <Stack>
@@ -36,4 +37,5 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
 
