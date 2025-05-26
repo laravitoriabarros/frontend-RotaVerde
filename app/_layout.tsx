@@ -26,8 +26,8 @@ export default function RootLayout() {
               }}
             />
           </Stack>
-        </TanStackProvider>
         </ImoveisProvider>
+        </TanStackProvider>
         <Toast
           autoHide={true}
           visibilityTime={3000}
