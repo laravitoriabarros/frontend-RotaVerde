@@ -13,6 +13,7 @@ import { removeMask } from '~/lib/parse';
 import { useMutation } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { BAIRROS } from '~/lib/constants';
+import { registerUserService } from '~/services/register/register-user-service';
 
 export default function CadastroCooperativa() {
   const router = useRouter();
@@ -28,11 +29,12 @@ export default function CadastroCooperativa() {
       nome_cooperativa: '',
       confirmar_senha: '',
       area_atuacao: [],
+      role: 'cooperativa'
     }
   })
 
-  const registerCooperativaMutation = useMutation({
-    mutationFn: registerCooperativaService,
+  const { mutateAsync: registerCooperativaMutation } = useMutation({
+    mutationFn: registerUserService,
     onSuccess: () => {
       Toast.show({
         type: 'success',
@@ -58,7 +60,7 @@ export default function CadastroCooperativa() {
       ...userData
     }
 
-    await registerCooperativaMutation.mutateAsync(formattedData)
+    await registerCooperativaMutation(formattedData)
   }
 
   const isSelected = (areas_atuacao: string[], bairro: string) => {
