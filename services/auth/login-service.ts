@@ -1,8 +1,8 @@
-import { setItemAsync } from "expo-secure-store";
 import { HTTPError } from "ky";
 import { z } from "zod";
 import { UserRoleEnum } from "~/lib/types/shared-types";
 import api from "../api-client";
+import { storeAuthData } from "./storage-service";
 
 export const loginFormSchema = z.object({
     email: z.string({
@@ -24,8 +24,11 @@ export async function signInService(data : LoginFormData): Promise<any> {
             role: UserRoleEnum
         }>()
 
-        if(result.token) {
-            await setItemAsync('token', result.token)
+        if(result) {
+            await storeAuthData({
+                token: result.token,
+                role: result.role
+            })
         }
 
         return { success: true, message: null, data: result }

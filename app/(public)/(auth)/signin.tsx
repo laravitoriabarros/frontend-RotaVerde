@@ -21,7 +21,7 @@ export default function Login() {
     }
   })
 
-    const signInMutation = useMutation({
+    const { mutateAsync: signInMutation } = useMutation({
     mutationFn: signInService,
     onSuccess: ({ data: { role }}) => {
       handleRedirectAfterLogin(role)
@@ -36,7 +36,7 @@ export default function Login() {
   })
 
   const onSubmit = async (data: LoginFormData) => {
-        await signInMutation.mutateAsync(data)
+        await signInMutation(data)
   }
 
   const handleRedirectAfterLogin = (role: UserRoleEnum) => {
