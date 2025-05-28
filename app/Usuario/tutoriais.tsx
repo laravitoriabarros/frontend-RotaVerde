@@ -65,6 +65,8 @@ export default function Tutoriais() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
+        <Image source={require('../../assets/images/reciclar.png')} style={styles.topImage} />
+
         <Text style={styles.h1}>Como participar da coleta seletiva?</Text>
 
         <Text style={styles.h3}>
@@ -153,7 +155,6 @@ export default function Tutoriais() {
         </View>
       </Modal>
 
-      {/* Barra Inferior */}
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
@@ -194,6 +195,13 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 80,
   },
+  topImage: {
+  width: 250,
+  height: 250,
+  resizeMode: 'contain',
+  alignSelf: 'center',
+  marginBottom: 20,
+},
   h1: {
     fontSize: 24,
     fontWeight: 'bold',
