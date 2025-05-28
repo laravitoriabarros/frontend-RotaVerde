@@ -13,6 +13,9 @@ import { removeMask } from '~/lib/parse';
 import { useMutation } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { BAIRROS } from '~/lib/constants';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+
 
 export default function CadastroCooperativa() {
   const router = useRouter();
@@ -72,6 +75,31 @@ export default function CadastroCooperativa() {
       return [...areas_atuacao, bairro];
     }
   };
+
+  const [materiaisSelecionados, setMateriaisSelecionados] = useState<string[]>([]);
+
+  const toggleMaterial = (material: string) => {
+    if (materiaisSelecionados.includes(material)) {
+      setMateriaisSelecionados((prev) => prev.filter((m) => m !== material));
+    } else {
+      setMateriaisSelecionados((prev) => [...prev, material]);
+    }
+  };
+
+  const iconesPorMaterial: { [key: string]: React.ReactNode } = {
+    'Papéis': <MaterialCommunityIcons name="notebook-outline" size={36} color="white" />,
+    'Papelão': <MaterialCommunityIcons name="archive" size={36} color="white" />,
+    'Plásticos': <MaterialCommunityIcons name="bottle-soda" size={36} color="white" />,
+    'Vidros': <MaterialCommunityIcons name="glass-wine" size={36} color="white" />,
+    'Metais': <FontAwesome5 name="cog" size={34} color="white" />,
+    'Podas de árvores': <MaterialCommunityIcons name="leaf" size={36} color="white" />,
+    'Pilhas': <MaterialCommunityIcons name="battery" size={36} color="white" />,
+    'Baterias': <MaterialCommunityIcons name="car-battery" size={36} color="white" />,
+    'Eletrônicos': <MaterialCommunityIcons name="cellphone" size={36} color="white" />,
+    'Roupas': <MaterialCommunityIcons name="tshirt-crew" size={36} color="white" />,
+    'Entulhos': <MaterialCommunityIcons name="cube" size={36} color="white" />,
+  };
+
 
   return (
     <View style={styles.container}>
@@ -270,6 +298,32 @@ export default function CadastroCooperativa() {
           <Text className="text-xs mb-4 text-red-500">{errors.confirmar_senha?.message}</Text>
         )}
 
+        <Text style={styles.label}>Selecione os materiais que você coleta:</Text>
+        <View style={styles.materialGrid}>
+          {Object.entries(iconesPorMaterial).map(([material, icon]) => {
+            const selecionado = materiaisSelecionados.includes(material);
+            return (
+              <TouchableOpacity
+                key={material}
+                style={styles.materialWrapper}
+                onPress={() => toggleMaterial(material)}
+                activeOpacity={0.8}
+              >
+                <View
+                  style={[
+                    styles.circle,
+                    { backgroundColor: selecionado ? '#3629B7' : '#4EC063' },
+                  ]}
+                >
+                  {icon}
+                </View>
+                <Text style={styles.materialText}>{material}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+
         <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
@@ -373,4 +427,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+    materialGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginBottom: 30,
+  },
+  materialWrapper: {
+    alignItems: 'center',
+    margin: 10,
+    width: 80,
+  },
+  circle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  materialText: {
+    marginTop: 6,
+    fontSize: 13,
+    color: '#000000',
+    textAlign: 'center',
+  },
+
 });
+
