@@ -15,7 +15,7 @@ export default function Index() {
         duration: 800, // duração do fadeout 0.8 segundos
         useNativeDriver: true,
       }).start(() => {
-        router.replace('/pagina-decisao-inicial')
+        router.replace('/Usuario/pagina-inicial')
       });
     }, 2000); // espera 2 segundos antes de começar o fade
 

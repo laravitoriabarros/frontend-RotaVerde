@@ -46,6 +46,7 @@ export default function CooperativaModal({ visible, onClose, cooperativa }: Coop
         <View style={styles.modalContent}>
           
           <View style={styles.topBackground} />
+          <View style={styles.whiteBackground} />
 
           {/* Imagem padrão é icone de reciclagem se a cooperativa nao tiver foto */}
           <View style={styles.fotoContainer}>
@@ -64,7 +65,7 @@ export default function CooperativaModal({ visible, onClose, cooperativa }: Coop
             <Text style={styles.title}>{cooperativa.nome_cooperativa}</Text>
             <Text style={styles.subtitle}>Responsável: {cooperativa.nome_usuario}</Text>
 
-            <Text style={styles.sectionTitle}>Áreas de Atuação:</Text>
+            <Text style={styles.sectionTitle}>Materiais que coleta:</Text>
             <View style={styles.iconesContainer}>
               {cooperativa.area_atuacao.map((area, index) => (
                 <View key={index} style={styles.iconeItem}>
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
   top: 0,
   left: 0,
   right: 0,
-  height: 120,
+  height: 200,
   backgroundColor: '#3629B7',
   zIndex: -1,
 },
@@ -223,4 +224,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'white',
   },
+  whiteBackground: {
+  position: 'absolute',
+  top: 80,
+  left: -20,
+  right: -20,
+  bottom: -1000,
+  backgroundColor: 'white',
+  borderTopLeftRadius: 40,
+  borderTopRightRadius: 40,
+  zIndex: -1,
+},
 });
