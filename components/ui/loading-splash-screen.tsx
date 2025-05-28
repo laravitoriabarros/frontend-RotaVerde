@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { Animated, View, Image } from 'react-native';
-import { useRouter } from 'expo-router';
 import tw from 'twrnc';
 
 interface LoadingSplashProps {
