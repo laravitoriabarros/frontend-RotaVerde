@@ -4,7 +4,7 @@ import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
-import { RegisterUserFormData, registerUserFormSchema, registerUserService } from '~/services/register/register-user-service';
+import { RegisterCidadaoFormData, registerCidadaoFormSchema, registerUserService } from '~/services/register/register-user-service';
 import { maskInputPhone } from '~/lib/masks-input';
 import { useMutation } from '@tanstack/react-query';
 import { removeMask } from '~/lib/parse';
@@ -15,16 +15,17 @@ export default function CadastroUsuario() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const { control, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(registerUserFormSchema),
+    resolver: zodResolver(registerCidadaoFormSchema),
     defaultValues: {
       nome_usuario: '',
       telefone: '',
       email: '',
       senha: '',
+      role: 'cidadao'
     }
   })
 
-  const registerUserMutation = useMutation({
+  const { mutateAsync: registerUserMutation } = useMutation({
     mutationFn: registerUserService,
     onSuccess: () => {
        Toast.show({
@@ -41,13 +42,13 @@ export default function CadastroUsuario() {
     }
   })
 
-  const onSubmit = async (data: RegisterUserFormData) => {
+  const onSubmit = async (data: RegisterCidadaoFormData) => {
     const { telefone, ...userInfo } = data
     const formattedData = {
         telefone: removeMask(telefone),
         ...userInfo
     }
-   await registerUserMutation.mutateAsync(formattedData)
+   await registerUserMutation(formattedData)
   }
 
   return (
@@ -57,12 +58,12 @@ export default function CadastroUsuario() {
       </TouchableOpacity>
 
       <Image
-        source={require('../../../../assets/images/logo.png')}
+        source={require('../../assets/images/logo.png')}
         style={styles.image}
         resizeMode="contain"
       />
 
-      <Text style={styles.title}>Cadastre-se</Text>
+      <Text style={styles.title}>Cadastre-seeee</Text>
 
       <Text style={styles.label}>Nome</Text>
       <Controller

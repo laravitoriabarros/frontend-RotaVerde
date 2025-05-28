@@ -87,7 +87,7 @@ export default function CadastroAnuncio() {
                 totalSteps={3}
                 steps={formSteps}
                 handleSubmitForm={() => {
-                    router.push('/cooperativa/anuncio/cadastro/sucesso/sucesso')
+                    router.push('/(private)/(cooperativa)/anuncio/cadastro/sucesso/sucesso')
                 }}
              />
              <CooperativaMenuBar />

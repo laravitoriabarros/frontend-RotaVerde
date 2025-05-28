@@ -1,11 +1,13 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
-import MapView from 'react-native-maps';
+import { ActivityIndicator, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import Icon from 'react-native-vector-icons/Feather';
+import { useImoveis } from '~/providers/Imoveis-contexts';
 
 export default function TelaCooperativa() {
   const router = useRouter();
+  const { imoveis, loading, error } = useImoveis();
 
   const goToPaginaInicial = () => {
     router.push('/Cooperativa/pagina-inicial');
@@ -40,7 +42,31 @@ export default function TelaCooperativa() {
           longitudeDelta: 0.0421,
         }}
         provider="google"
-      />
+      >
+        {imoveis.map(imovel => (
+          <Marker
+            key={imovel.id}
+            coordinate={{
+              latitude: imovel.location.latitude,
+              longitude: imovel.location.longitude,
+            }}
+            title={`${imovel.endereco.logradouro}, ${imovel.endereco.numero}`}
+            description={`${imovel.endereco.bairro} - ${imovel.coletavel ? 'Coletável' : 'Não coletável'}`}
+          />
+        ))}
+      </MapView>
+
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#3629B7" />
+        </View>
+      )}
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
 
       {/* Barra inferior */}
       <View style={styles.navBar}>
@@ -95,5 +121,28 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     padding: 10,
+  },
+  loadingContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  },
+  errorContainer: {
+    position: 'absolute',
+    top: 100,
+    left: 20,
+    right: 20,
+    backgroundColor: '#ff6b6b',
+    padding: 10,
+    borderRadius: 5,
+  },
+  errorText: {
+    color: 'white',
+    textAlign: 'center',
   },
 });
