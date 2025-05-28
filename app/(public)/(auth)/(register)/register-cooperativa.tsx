@@ -6,14 +6,13 @@ import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterCooperativaFormData, registerCooperativaFormSchema, registerCooperativaService } from '~/services/register/register-cooperativa-service';
 import { ShowHiddenPassword } from '~/components/ui/show-hidden-password';
 import { maskInputCnpj, maskInputPhone } from '~/lib/masks-input';
 import { removeMask } from '~/lib/parse';
 import { useMutation } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { BAIRROS } from '~/lib/constants';
-import { registerUserService } from '~/services/register/register-user-service';
+import { registerUserService, RegisterCooperativaFormData, registerCooperativaFormSchema } from '~/services/register/register-user-service';
 
 export default function CadastroCooperativa() {
   const router = useRouter();

@@ -5,12 +5,12 @@ import Icon from 'react-native-vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterMotoristaFormData, registerMotoristaFormSchema, registerMotoristaService } from '~/services/register/register-motorista-service';
 import { maskInputPhone } from '~/lib/masks-input';
 import { ShowHiddenPassword } from '~/components/ui/show-hidden-password';
 import { removeMask } from '~/lib/parse';
 import { useMutation } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
+import { registerUserService, RegisterMotoristaFormData, registerMotoristaFormSchema  } from '~/services/register/register-user-service';
 
 export default function CadastroMotorista() {
   const router = useRouter();
@@ -24,13 +24,14 @@ export default function CadastroMotorista() {
         email: '',
         senha: '',
         nome_cooperativa: '',
-        confirmar_senha: ''
+        confirmar_senha: '',
+        role: 'motorista'
       }
     })
 
 
-    const registerMotoristaMutation = useMutation({
-    mutationFn: registerMotoristaService,
+    const { mutateAsync: registerMotoristaMutation } = useMutation({
+    mutationFn: registerUserService,
     onSuccess: () => {
        Toast.show({
         type: 'success',
@@ -55,7 +56,7 @@ export default function CadastroMotorista() {
         telefone: removeMask(telefone)
       }
 
-      await registerMotoristaMutation.mutateAsync(formattedData)
+      await registerMotoristaMutation(formattedData)
     }
 
 
