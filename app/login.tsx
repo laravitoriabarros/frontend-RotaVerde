@@ -5,7 +5,7 @@ import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
-import { loginFormData, loginFormSchema } from '~/services/auth/login-service';
+import { LoginFormData, loginFormSchema } from '~/services/auth/login-service';
 import { maskInputPhone } from '~/utils/masks';
 
 export default function Login() {
@@ -14,13 +14,12 @@ export default function Login() {
   const { control, handleSubmit, formState: { errors }} = useForm({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      phone: '',
       email: '',
-      password: ''
+      senha: ''
     }
   })
 
-  const handleLogin = (data: loginFormData) => {
+  const handleLogin = (data: LoginFormData) => {
     console.log(data);
     router.push('/Usuario/pagina-inicial');
   }
@@ -34,7 +33,7 @@ export default function Login() {
   };
 
   const redirectToRegister = () => {
-    router.push('/Pagina-De-Cadastro/cadastro-parte1');
+    router.push('/(public)/(auth)/(register)/register');
   };
 
   return (
@@ -47,26 +46,6 @@ export default function Login() {
 
       {/* Título */}
       <Text className='text-2xl font-bold text-[##005A53] text-center mb-8'>Faça login para acessar o app</Text>
-
-      {/* Método de autenticação */}
-      <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Digite seu telefone</Text>
-      <Controller
-        control={control}
-        name="phone"
-        render={({ field: { onChange, value, onBlur, ...field } }) => (
-          <TextInput className='border border-gray-300 rounded-lg p-4 mb-4' placeholder="Digite seu telefone"
-          value={value}
-          onChangeText={(value: string) => {
-            const phone = maskInputPhone(value)
-            onChange(phone)
-          }}
-          onBlur={onBlur}
-          />
-        )}
-      />
-      {errors.phone && (
-          <Text className="text-xs mb-4 text-red-500">{errors.phone.message}</Text>
-      )}
 
       {/* Campo - Login */}
       <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Digite seu e-mail</Text>
@@ -90,7 +69,7 @@ export default function Login() {
       <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
         <Controller
           control={control}
-          name='password'
+          name='senha'
           render={({ field: { onChange, value, onBlur, ...field }}) => (
             <TextInput
               className='flex-1 h-[50px]'
@@ -118,8 +97,8 @@ export default function Login() {
           )}
         </TouchableOpacity>
       </View>
-      {errors.password && (
-          <Text className="text-xs mb-4 text-red-500">{errors.password.message}</Text>
+      {errors.senha && (
+          <Text className="text-xs mb-4 text-red-500">{errors.senha.message}</Text>
       )}
 
       {/* Botão esqueci a senha */}

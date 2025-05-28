@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,28 +14,78 @@ import Icon from "react-native-vector-icons/Feather";
 import MapView, { Marker } from "react-native-maps";
 import { Picker } from "@react-native-picker/picker";
 import { useMutation } from "@tanstack/react-query";
-import { getAddressFromCoordinates } from '~/utils/location';
+import { getAddressFromCoordinates } from "~/utils/location"; 
+import { getTokenData } from "~/utils/auth";
+import * as Location from 'expo-location'; 
 
 export default function CadastrarImovel() {
   const router = useRouter();
 
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+
   const [nome, setNome] = useState("");
   const [tipoImovel, setTipoImovel] = useState("");
   const [lixoReciclavel, setLixoReciclavel] = useState("");
+  const [enderecoFormatado, setEnderecoFormatado] = useState("Nenhuma localização selecionada"); 
+  const [enderecoCompleto, setEnderecoCompleto] = useState<Location.LocationGeocodedAddress | null>(null);
   const [localizacao, setLocalizacao] = useState<{ latitude: number; longitude: number } | null>(null);
   const [mostrarMapa, setMostrarMapa] = useState(false);
+
+  useEffect(() => {
+    async function fetchUserId() {
+      try {
+        setIsLoadingUser(true);
+        const { userId: fetchedUserId } = await getTokenData();
+        setUserId(fetchedUserId);
+      } catch (error) {
+        console.error("Erro ao obter userId:", error);
+        Alert.alert("Erro de autenticação", "Não foi possível carregar os dados do seu usuário. Tente novamente ou faça login.");
+        router.push("/login");
+      } finally {
+        setIsLoadingUser(false);
+      }
+    }
+
+    fetchUserId();
+  }, []);
 
   const handleGoBack = () => {
     router.back();
   };
 
-  const handleMapPress = (event: { nativeEvent: { coordinate: { latitude: number; longitude: number } } }) => {
+  
+  const handleMapPress = async (event: { nativeEvent: { coordinate: { latitude: number; longitude: number } } }) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setLocalizacao({ latitude, longitude });
+
+    const addresses = await getAddressFromCoordinates({ latitude, longitude });
+    if (addresses && addresses.length > 0) {
+      const firstAddress = addresses[0];
+      setEnderecoCompleto(firstAddress); 
+
+      
+      const formatted = [
+        firstAddress.street, 
+        firstAddress.streetNumber, 
+        firstAddress.district, 
+        firstAddress.city, 
+        firstAddress.region, 
+        firstAddress.postalCode 
+      ].filter(Boolean).join(', '); 
+
+      setEnderecoFormatado(formatted || "Endereço não encontrado");
+    } else {
+      setEnderecoFormatado("Endereço não encontrado para este local.");
+      setEnderecoCompleto(null); 
+    }
   };
 
   const cadastrarImovel = async (dados: any) => {
-    const response = await fetch(`http://127.0.0.1:8000/cadastrar_residencias/uid-de-teste`, {
+    if (!userId) {
+      throw new Error("ID do usuário não disponível. Por favor, faça login novamente.");
+    }
+    const response = await fetch(`http://192.168.0.18:5000/cidadao/cadastrar_residencias/${userId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dados),
@@ -53,7 +103,7 @@ export default function CadastrarImovel() {
     mutationFn: cadastrarImovel,
     onSuccess: () => {
       Alert.alert("Sucesso!", "Imóvel cadastrado com sucesso.");
-      router.push("/Usuario/final-cad-imovel"); 
+      router.push("/Usuario/final-cad-imovel");
     },
     onError: (error) => {
       Alert.alert("Erro", `Não foi possível cadastrar o imóvel: ${error.message}`);
@@ -61,26 +111,28 @@ export default function CadastrarImovel() {
   });
 
   const handleSubmit = () => {
-    if (!nome || !tipoImovel || !localizacao) {
-      Alert.alert("Atenção", "Por favor, preencha todos os campos obrigatórios (Nome, Tipo de Imóvel e Localização).");
+    
+    if (!nome || !tipoImovel || !localizacao || !enderecoCompleto) {
+      Alert.alert("Atenção", "Por favor, preencha todos os campos obrigatórios (Nome, Tipo de Imóvel, Localização e Endereço).");
       return;
     }
     if (!lixoReciclavel) {
       Alert.alert("Atenção", "Por favor, informe se há lixo reciclável para coleta.");
       return;
     }
-    
+
     const dados = {
-      nome, 
+      nome,
       tipoImovel,
-      lixoReciclavel: lixoReciclavel === "sim" ? true : false, 
+      lixoReciclavel: lixoReciclavel === "sim" ? true : false,
       endereco: {
-        logradouro: "Rua Exemplo",
-        numero: "123",
-        bairro: "Centro",
-        cidade: "São Paulo",
-        estado: "SP", 
-        cep: "00000-000",
+        
+        logradouro: enderecoCompleto.street || "",
+        numero: enderecoCompleto.streetNumber || "", 
+        bairro: enderecoCompleto.district || "",
+        cidade: enderecoCompleto.city || "",
+        estado: enderecoCompleto.region || "",
+        cep: enderecoCompleto.postalCode || "",
       },
       location: {
         latitude: localizacao.latitude,
@@ -91,7 +143,10 @@ export default function CadastrarImovel() {
     mutation.mutate(dados);
   };
 
- 
+  if (isLoadingUser || !userId) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       {mostrarMapa ? (
@@ -99,7 +154,7 @@ export default function CadastrarImovel() {
           <MapView
             style={styles.fullScreenMap}
             initialRegion={{
-              latitude: localizacao?.latitude || -9.6498487, 
+              latitude: localizacao?.latitude || -9.6498487,
               longitude: localizacao?.longitude || -35.7089492,
               latitudeDelta: 0.01,
               longitudeDelta: 0.01,
@@ -111,7 +166,7 @@ export default function CadastrarImovel() {
               <Marker
                 coordinate={localizacao}
                 title="Local selecionado"
-                description="Toque para mover o pin" // Adicione uma descrição útil
+                description="Toque para mover o pin"
               />
             )}
           </MapView>
@@ -120,7 +175,8 @@ export default function CadastrarImovel() {
             <TouchableOpacity
               onPress={() => {
                 setMostrarMapa(false);
-                Alert.alert("Localização Capturada", `Latitude: ${localizacao.latitude.toFixed(6)}, Longitude: ${localizacao.longitude.toFixed(6)}`);
+                // Exibe o endereço formatado no alerta de confirmação
+                Alert.alert("Localização Capturada", `Latitude: ${localizacao.latitude.toFixed(6)}, Longitude: ${localizacao.longitude.toFixed(6)}\nEndereço: ${enderecoFormatado}`);
               }}
               style={styles.confirmMapButton}
             >
@@ -130,7 +186,9 @@ export default function CadastrarImovel() {
 
           <TouchableOpacity
             onPress={() => {
-              setLocalizacao(null); 
+              setLocalizacao(null);
+              setEnderecoFormatado("Nenhuma localização selecionada"); // Limpa o endereço formatado
+              setEnderecoCompleto(null); // Limpa o objeto de endereço completo
               setMostrarMapa(false);
             }}
             style={styles.cancelMapButton}
@@ -139,7 +197,7 @@ export default function CadastrarImovel() {
           </TouchableOpacity>
         </View>
       ) : (
-        
+
         <>
           <View style={styles.header}>
             <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
@@ -191,8 +249,8 @@ export default function CadastrarImovel() {
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
                   placeholder="Toque no ícone para abrir o mapa"
-                  value={localizacao ? `Lat: ${localizacao.latitude.toFixed(4)}, Lon: ${localizacao.longitude.toFixed(4)}` : "Nenhuma localização selecionada"}
-                  editable={false}
+                  value={enderecoFormatado} // Exibe o endereço formatado aqui
+                  editable={false} // Não permite edição manual, apenas via mapa
                 />
                 <TouchableOpacity onPress={() => setMostrarMapa(true)} style={styles.iconButton}>
                   <Icon name="map-pin" size={24} color="#3629B7" />
