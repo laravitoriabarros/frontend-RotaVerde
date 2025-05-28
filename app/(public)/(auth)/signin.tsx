@@ -5,7 +5,7 @@ import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod'
-import { LoginFormData, loginFormSchema, signInService } from '~/services/auth/login-service';
+import { ISignInServiceResponse, LoginFormData, loginFormSchema, signInService } from '~/services/auth/login-service';
 import { useMutation } from '@tanstack/react-query';
 import { UserRoleEnum } from '~/lib/types/shared-types';
 import Toast from 'react-native-toast-message';
@@ -23,8 +23,10 @@ export default function Login() {
 
     const { mutateAsync: signInMutation } = useMutation({
     mutationFn: signInService,
-    onSuccess: ({ data: { role }}) => {
-      handleRedirectAfterLogin(role)
+    onSuccess: ({ success, data }: ISignInServiceResponse) => {
+      if(success) {
+        handleRedirectAfterLogin(data!.role)
+      }
     },
     onError: () => {
        Toast.show({

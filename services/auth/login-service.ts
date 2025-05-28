@@ -15,7 +15,18 @@ export const loginFormSchema = z.object({
 
 export type LoginFormData = z.infer<typeof loginFormSchema>
 
-export async function signInService(data : LoginFormData): Promise<any> {
+export interface ISignInResponse {
+    token: string
+    role: UserRoleEnum
+}
+
+export interface ISignInServiceResponse {
+    success: boolean;
+    message: string | null;
+    data: ISignInResponse | null;
+}
+
+export async function signInService(data : LoginFormData): Promise<ISignInServiceResponse> {
     try {
         const result = await api.post('auth/login', {
             json: data
@@ -30,7 +41,6 @@ export async function signInService(data : LoginFormData): Promise<any> {
                 role: result.role
             })
         }
-
         return { success: true, message: null, data: result }
     } catch (err) {
         console.log(err)
