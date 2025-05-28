@@ -23,13 +23,13 @@ export default function CadastroParte1() {
   return (
     <View style={styles.container}>
       {/* Botão de Voltar */}
-      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/pagina-decisao-inicial')}>
+      <TouchableOpacity style={styles.backButton} onPress={() => router.push('/initial-decision')}>
         <Icon name="arrow-left" size={28} color="#4EC063" />
       </TouchableOpacity>
 
       {/* Imagem */}
       <Image
-        source={require('../../../../assets/images/cadastro-01.png')}
+        source={require('../../assets/images/cadastro-01.png')}
         style={styles.image}
         resizeMode="contain"
       />

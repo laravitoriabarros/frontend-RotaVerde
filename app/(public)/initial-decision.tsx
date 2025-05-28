@@ -8,7 +8,7 @@ export default function PaginaDeEntrada() {
     <View style={styles.container}>
 
       <Image
-        source={require('../assets/images/pagina-decisao-inicial.png')}
+        source={require('../../assets/images/pagina-decisao-inicial.png')}
         style={styles.image}
         resizeMode="contain"
       />
@@ -33,7 +33,7 @@ export default function PaginaDeEntrada() {
 
         <TouchableOpacity
           style={[styles.button, { backgroundColor: '#4EC063' }]}
-          onPress={() => router.push('/register')}
+          onPress={() => router.push('/(public)/register')}
         >
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>

@@ -6,13 +6,13 @@ import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { RegisterCooperativaFormData, registerCooperativaFormSchema, registerCooperativaService } from '~/services/register/register-cooperativa-service';
 import { ShowHiddenPassword } from '~/components/ui/show-hidden-password';
 import { maskInputCnpj, maskInputPhone } from '~/lib/masks-input';
 import { removeMask } from '~/lib/parse';
 import { useMutation } from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import { BAIRROS } from '~/lib/constants';
+import { registerUserService, RegisterCooperativaFormData, registerCooperativaFormSchema } from '~/services/register/register-user-service';
 
 export default function CadastroCooperativa() {
   const router = useRouter();
@@ -28,11 +28,12 @@ export default function CadastroCooperativa() {
       nome_cooperativa: '',
       confirmar_senha: '',
       area_atuacao: [],
+      role: 'cooperativa'
     }
   })
 
-  const registerCooperativaMutation = useMutation({
-    mutationFn: registerCooperativaService,
+  const { mutateAsync: registerCooperativaMutation } = useMutation({
+    mutationFn: registerUserService,
     onSuccess: () => {
       Toast.show({
         type: 'success',
@@ -58,7 +59,7 @@ export default function CadastroCooperativa() {
       ...userData
     }
 
-    await registerCooperativaMutation.mutateAsync(formattedData)
+    await registerCooperativaMutation(formattedData)
   }
 
   const isSelected = (areas_atuacao: string[], bairro: string) => {
@@ -81,7 +82,7 @@ export default function CadastroCooperativa() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Image
-          source={require('../../../../assets/images/logo.png')}
+          source={require('../../assets/images/logo.png')}
           style={styles.image}
           resizeMode="contain"
         />

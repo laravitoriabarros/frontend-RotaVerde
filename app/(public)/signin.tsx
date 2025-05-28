@@ -2,31 +2,63 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
-import { loginFormData, loginFormSchema } from '~/services/auth/login-service';
-import { maskInputPhone } from '~/utils/masks';
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ISignInServiceResponse, LoginFormData, loginFormSchema, signInService } from '~/services/auth/login-service';
+import { useMutation } from '@tanstack/react-query';
+import { UserRoleEnum } from '~/lib/types/shared-types';
+import Toast from 'react-native-toast-message';
+import { useAuth } from '~/providers/auth-context';
 
 export default function Login() {
+  const { signIn } = useAuth()
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const { control, handleSubmit, formState: { errors }} = useForm({
+  const { control, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      phone: '',
       email: '',
-      password: ''
+      senha: ''
     }
   })
 
-  const handleLogin = (data: loginFormData) => {
-    console.log(data);
-    router.push('/Usuario/pagina-inicial');
+    const { mutateAsync: signInMutation } = useMutation({
+    mutationFn: signInService,
+    onSuccess: ({ success, data }: ISignInServiceResponse) => {
+      if(success && data) {
+        signIn(data)
+        handleRedirectAfterLogin(data.role)
+      }
+    },
+    onError: () => {
+       Toast.show({
+        type: 'error',
+        text1: 'Erro ao realizar o login!',
+        text2: 'Senha ou E-mail estão incorretos.'
+       })
+    }
+  })
+
+  const onSubmit = async (data: LoginFormData) => {
+        await signInMutation(data)
   }
 
-  const handleRedirectAfterLogin = () => {
-    console.log('vai redirecionar');
+  const handleRedirectAfterLogin = (role: UserRoleEnum) => {
+    console.log(role)
+    switch(role) {
+        case 'cidadao':
+          router.push('/(private)/(cidadao)/home')
+          break;
+        case 'cooperativa':
+          router.push('/(private)/(cooperativa)/home')
+          break;
+        case 'motorista':
+          router.push('/(private)/(motorista)/home')
+          break;
+        default:
+         break;
+      }
   };
 
   const redirectToForgotPassword = () => {
@@ -34,41 +66,19 @@ export default function Login() {
   };
 
   const redirectToRegister = () => {
-    router.push('/Pagina-De-Cadastro/cadastro-parte1');
+    router.push('/register');
   };
 
   return (
     <View className="flex bg-white px-5 pt-20">
       <Image
-        source={require('../assets/images/logo.png')}
+        source={require('../../assets/images/logo.png')}
         className='w-full h-32 mb-5'
         resizeMode="contain"
       />
 
-      {/* Título */}
       <Text className='text-2xl font-bold text-[##005A53] text-center mb-8'>Faça login para acessar o app</Text>
 
-      {/* Método de autenticação */}
-      <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Digite seu telefone</Text>
-      <Controller
-        control={control}
-        name="phone"
-        render={({ field: { onChange, value, onBlur, ...field } }) => (
-          <TextInput className='border border-gray-300 rounded-lg p-4 mb-4' placeholder="Digite seu telefone"
-          value={value}
-          onChangeText={(value: string) => {
-            const phone = maskInputPhone(value)
-            onChange(phone)
-          }}
-          onBlur={onBlur}
-          />
-        )}
-      />
-      {errors.phone && (
-          <Text className="text-xs mb-4 text-red-500">{errors.phone.message}</Text>
-      )}
-
-      {/* Campo - Login */}
       <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Digite seu e-mail</Text>
       <Controller
         control={control}
@@ -82,15 +92,14 @@ export default function Login() {
         )}
       />
       {errors.email && (
-          <Text className="text-xs mb-4 text-red-500">{errors.email.message}</Text>
+          <Text className="text-xs mb-4 text-red-500">{errors.email?.message as string}</Text>
       )}
 
-      {/* Campo senha */}
       <Text className='font-semibold text-sm mb-1.5 text-zinc-800'>Senha</Text>
       <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
         <Controller
           control={control}
-          name='password'
+          name='senha'
           render={({ field: { onChange, value, onBlur, ...field }}) => (
             <TextInput
               className='flex-1 h-[50px]'
@@ -118,8 +127,8 @@ export default function Login() {
           )}
         </TouchableOpacity>
       </View>
-      {errors.password && (
-          <Text className="text-xs mb-4 text-red-500">{errors.password.message}</Text>
+      {errors.senha && (
+          <Text className="text-xs mb-4 text-red-500">{errors.senha?.message as string}</Text>
       )}
 
       {/* Botão esqueci a senha */}
@@ -129,7 +138,7 @@ export default function Login() {
 
       {/* Botão Entrar */}
       <TouchableOpacity className='bg-[#4EC063] py-3.5 items-center rounded-3xl'
-        onPress={handleSubmit(handleLogin)}
+        onPress={handleSubmit(onSubmit)}
        >
         <Text className='text-white font-bold text-base'>Entrar</Text>
       </TouchableOpacity>

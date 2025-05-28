@@ -11,7 +11,7 @@ export default function CadastroSucesso() {
     };
 
     const redirectToCreateAnotherAd = () => {
-        router.push('/cooperativa/anuncio/cadastro');
+        router.push('/(private)/(cooperativa)/anuncio/cadastro');
     };
 
     return (
