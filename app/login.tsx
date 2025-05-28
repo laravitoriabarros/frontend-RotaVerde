@@ -14,7 +14,7 @@ export default function Login() {
   const { control, handleSubmit, formState: { errors }} = useForm({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      phone: '',
+      // Estou comentando pq estava acusando problema, e não precisa de celular pra logar - phone: '',
       email: '',
       password: ''
     }
@@ -34,7 +34,7 @@ export default function Login() {
   };
 
   const redirectToRegister = () => {
-    router.push('/Pagina-De-Cadastro/cadastro-parte1');
+    router.push('/Pagina-De-Cadastro/cadastro-parte1'); //a pasta pagina de cadastro não existe nessa branch, por que isso está aqui?
   };
 
   return (
