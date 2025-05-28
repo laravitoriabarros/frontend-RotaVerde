@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     left: -20,
     right: -20,
     bottom: -1000,
-    backgroundColor: '#EEEEEE',
+    backgroundColor: 'white',
     borderRadius: 50,
     zIndex: 0,
   },
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: '#3629B7',
     borderRadius: 20,
     width: '90%',
     maxWidth: 400,
