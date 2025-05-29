@@ -3,90 +3,61 @@ import {
   View, Text, TouchableOpacity, StyleSheet,
   TextInput, Alert, ScrollView,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
 import { useImoveis } from '~/providers/Imoveis-contexts';
 
-
 export default function VerImovel() {
   const router = useRouter();
   const { imoveis, setImoveis } = useImoveis();
+  const params = useLocalSearchParams();
+  const imovelId = typeof params.id === 'string' ? params.id : undefined;
 
-  // Vamos editar o imóvel com id = 1 (exemplo)
-  const imovel = imoveis.find(i => i.id === 1);
+  const imovel = imoveis.find(i => i.id === imovelId);
 
-  // Estados locais para edição
   const [modoEdicao, setModoEdicao] = useState(false);
-  const [nome, setNome] = useState(imovel?.nome ?? '');
-  const [tipo, setTipo] = useState('Residencial'); // Seu modelo não tem tipo, você pode adicionar
-  const [endereco, setEndereco] = useState(imovel?.endereco ?? '');
-  const [lixoHoje, setLixoHoje] = useState('Sim');
-
+  const [logradouro, setLogradouro] = useState(imovel?.endereco?.logradouro ?? '');
+  const [lixoHoje, setLixoHoje] = useState(imovel?.coletavel ? 'Sim' : 'Não');
 
   useEffect(() => {
-  if (imovel) {
-    setNome(imovel.nome);
-    setEndereco(imovel.endereco);
-    setLixoHoje(imovel.lixoParaColetaHoje ? 'Sim' : 'Não');
-  }
-}, [imovel]);
+    if (imovel) {
+      setLogradouro(imovel.endereco.logradouro ?? ''); 
+      setLixoHoje(imovel.coletavel ? 'Sim' : 'Não');
+    }
+  }, [imovel]);
 
   const handleGoBack = () => {
-  if (router.canGoBack()) {
-    router.back();
-  } else {
-    router.push('/');
-  }
-};
-
-  const salvarPopup = () => {
-    Alert.alert('Tudo certo!', 'Dados salvos com sucesso!');
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.push('/');
+    }
   };
 
   const handleSalvarLixoHoje = () => {
     if (!imovel) return;
 
     const imoveisAtualizados = imoveis.map(i =>
-        i.id === imovel.id
-            ? { ...i, lixoParaColetaHoje: lixoHoje === 'Sim' } // <-- ATUALIZA O NOVO CAMPO
-            : i
+      i.id === imovel.id
+        ? { ...i, coletavel: lixoHoje === 'Sim' }
+        : i
     );
     setImoveis(imoveisAtualizados);
     Alert.alert('Sucesso!', 'Informação de coleta atualizada!');
-};
+  };
 
   const handleSalvarEdicao = () => {
     if (!imovel) return;
 
-    // Atualiza imóvel no contexto
     const imoveisAtualizados = imoveis.map(i =>
       i.id === imovel.id
-        ? { ...i, nome, endereco /* , tipo se existir */ }
+        ? {
+            ...i,
+            endereco: { ...i.endereco, logradouro: logradouro }, 
+          }
         : i
     );
-
-    <View style={styles.dropdownContainer}>
-      <Text style={styles.label}>Hoje tem lixo reciclável para coleta?</Text>
-      <View style={styles.pickerWrapper}>
-        <Picker
-            selectedValue={lixoHoje}
-            onValueChange={setLixoHoje} // Permita que o Picker mude o estado local
-            style={styles.picker}
-            enabled={!modoEdicao} // Mantenha disabled se estiver em modo de edição de outros campos
-        >
-            <Picker.Item label="Sim" value="Sim" />
-            <Picker.Item label="Não" value="Não" />
-        </Picker>
-      </View>
-      <TouchableOpacity
-        style={styles.smallButton}
-        onPress={handleSalvarLixoHoje} // <-- CHAMA A NOVA FUNÇÃO DE SALVAR
-        disabled={modoEdicao}
-      >
-        <Text style={styles.smallButtonText}>Salvar</Text>
-      </TouchableOpacity>
-    </View>
 
     setImoveis(imoveisAtualizados);
     setModoEdicao(false);
@@ -97,6 +68,9 @@ export default function VerImovel() {
     return (
       <View style={styles.container}>
         <Text>Imóvel não encontrado.</Text>
+        <TouchableOpacity style={styles.editButton} onPress={handleGoBack}>
+          <Text style={styles.buttonText}>Voltar</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -115,28 +89,12 @@ export default function VerImovel() {
 
         {modoEdicao ? (
           <View style={styles.form}>
-            <Text style={styles.label}>Nome do Imóvel</Text>
+            <Text style={styles.label}>Logradouro</Text>
             <TextInput
               style={styles.input}
-              value={nome}
-              onChangeText={setNome}
-              placeholder="Digite o nome"
-            />
-
-            <Text style={styles.label}>Tipo do Imóvel</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker selectedValue={tipo} onValueChange={setTipo} style={styles.picker}>
-                <Picker.Item label="Residencial" value="Residencial" />
-                <Picker.Item label="Comercial" value="Comercial" />
-              </Picker>
-            </View>
-
-            <Text style={styles.label}>Endereço</Text>
-            <TextInput
-              style={styles.input}
-              value={endereco}
-              onChangeText={setEndereco}
-              placeholder="Digite o endereço"
+              value={logradouro} 
+              onChangeText={setLogradouro}
+              placeholder="Digite o logradouro"
             />
 
             <View style={styles.editButtons}>
@@ -151,10 +109,11 @@ export default function VerImovel() {
           </View>
         ) : (
           <>
-            <Text style={styles.imovelName}>{nome}</Text>
-            <Text style={styles.imovelAddress}>{endereco}</Text>
-            <Text style={styles.infoText}>Tipo: {tipo}</Text>
-            <Text style={styles.infoText}>Lixo Reciclável: Sim</Text>
+            <Text style={styles.imovelName}>{imovel.endereco.logradouro}</Text>
+            <Text style={styles.imovelAddress}>
+                {imovel.endereco.logradouro}, {imovel.endereco.numero} - {imovel.endereco.bairro}, {imovel.endereco.cidade}
+            </Text>
+            <Text style={styles.infoText}>Lixo Reciclável: {lixoHoje}</Text>
             <Text style={styles.infoText}>Coletas Feitas: 10</Text>
             <Text style={styles.infoText}>Coletas Incompletas: 2</Text>
 
@@ -166,31 +125,32 @@ export default function VerImovel() {
           </>
         )}
 
+        ---
         <View style={styles.divider}>
           <Text style={styles.dividerText}>Informações de Hoje</Text>
         </View>
 
         <View style={styles.dropdownContainer}>
           <Text style={styles.label}>Hoje tem lixo reciclável para coleta?</Text>
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={lixoHoje}
-                onValueChange={setLixoHoje}
-                style={styles.picker}
-                enabled={!modoEdicao}
-              >
-                <Picker.Item label="Sim" value="Sim" />
-                <Picker.Item label="Não" value="Não" />
-              </Picker>
-            </View>
-    <TouchableOpacity
-        style={styles.smallButton}
-        onPress={handleSalvarLixoHoje} // <-- CHAMA A NOVA FUNÇÃO DE SALVAR
-        disabled={modoEdicao}
-    >
-        <Text style={styles.smallButtonText}>Salvar</Text>
-    </TouchableOpacity>
-    </View>
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={lixoHoje}
+              onValueChange={setLixoHoje}
+              style={styles.picker}
+              enabled={!modoEdicao}
+            >
+              <Picker.Item label="Sim" value="Sim" />
+              <Picker.Item label="Não" value="Não" />
+            </Picker>
+          </View>
+          <TouchableOpacity
+            style={styles.smallButton}
+            onPress={handleSalvarLixoHoje}
+            disabled={modoEdicao}
+          >
+            <Text style={styles.smallButtonText}>Salvar</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
 
       <View style={styles.navBar}>
@@ -211,7 +171,6 @@ export default function VerImovel() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: 'white' },
   header: {
@@ -229,24 +188,26 @@ const styles = StyleSheet.create({
     color: '#2F2F2F',
     textAlign: 'center',
     marginTop: 20,
-    backgroundColor: 'rgba(0,0,0,0.2)',
   },
   imovelAddress: {
     fontSize: 16,
     color: '#888888',
     textAlign: 'center',
     marginBottom: 10,
+    paddingHorizontal: 20,
   },
   infoText: {
     fontSize: 16,
     color: '#2F2F2F',
     marginTop: 8,
     textAlign: 'center',
+    paddingHorizontal: 20,
   },
   label: {
     fontSize: 16,
     color: '#2F2F2F',
     marginBottom: 5,
+    paddingHorizontal: 20,
   },
   divider: {
     borderTopWidth: 1,

@@ -63,26 +63,26 @@ export default function TelaMapa() {
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: 'rgba(0,0,0,0.5)'
-        }}>
-          <View style={{
-            backgroundColor: 'white',
-            padding: 20,
-            borderRadius: 10,
-            minWidth: 250,
-            alignItems: 'center'
-          }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Imóvel Selecionado</Text>
-            {selectedImovel && (
-              <>
-                <Text>Nome: {selectedImovel.nome}</Text>
-                <Text>Endereço: {selectedImovel.endereco}</Text>
-                <Text>Status: {selectedImovel.status}</Text>
-              </>
-            )}
-            <Button title="Fechar" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
+       }}>
+        <View style={{
+          backgroundColor: 'white',
+          padding: 20,
+        borderRadius: 10,
+        minWidth: 250,
+        alignItems: 'center'
+     }}>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Imóvel Selecionado</Text>
+      {selectedImovel && (
+        <>
+          <Text>Nome: {selectedImovel.nome}</Text>
+          <Text>Endereço: {selectedImovel.endereco.logradouro}, {selectedImovel.endereco.numero}, {selectedImovel.endereco.bairro}, {selectedImovel.endereco.cidade} </Text>
+          <Text>Status: {selectedImovel.status}</Text>
+        </>
+      )}
+      <Button title="Fechar" onPress={() => setModalVisible(false)} />
+    </View>
+  </View>
+</Modal>
 
       <CooperativaModal
         visible={modalCooperativaVisible}
@@ -103,13 +103,13 @@ export default function TelaMapa() {
         }}
         provider="google"
       >
-        {imoveis.filter(imovel => imovel.lixoParaColetaHoje === true)
+        {imoveis.filter(imovel => imovel.coletavel === true)
         .map((imovel) => (
           <Marker
             key={imovel.id}
-            coordinate={{ latitude: imovel.latitude, longitude: imovel.longitude }}
-            title={imovel.nome}
-            description={imovel.endereco}
+            coordinate={{ latitude: imovel.location.latitude, longitude: imovel.location.longitude }}
+            title={imovel.endereco.logradouro}
+            description={`${imovel.endereco.logradouro}, ${imovel.endereco.numero} - ${imovel.endereco.bairro}`}
             pinColor="#2F2F2F"
             onPress={() => handleImovelPress(imovel)}
           />

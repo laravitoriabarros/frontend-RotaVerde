@@ -1,60 +1,72 @@
-import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState, useCallback } from 'react';
 import api from '../services/api-client';
 import { getImoveisByCooperativaArea, Imovel } from '../services/residenceService';
-import { getTokenData } from '../utils/auth';
 
-interface ImoveisContextData {
+import { useAuth } from './auth-context'; 
+
+export interface ImoveisContextData {
   imoveis: Imovel[];
   setImoveis: React.Dispatch<React.SetStateAction<Imovel[]>>;
   loading: boolean;
   error: string | null;
+  refetchImoveis: () => Promise<void>;
 }
 
 const ImoveisContext = createContext<ImoveisContextData | undefined>(undefined);
 
 export const ImoveisProvider = ({ children }: { children: ReactNode }) => {
+
+  const { userId, userRole, isLoading: authLoading } = useAuth();
   const [imoveis, setImoveis] = useState<Imovel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const loadImoveis = useCallback(async () => {
+    
+    if (authLoading) {
+      setLoading(true); 
+      return;
+    }
+
+    if (!userId || !userRole) { 
+      setImoveis([]);
+      setLoading(false);
+      setError('Nenhum usuário logado, ID de usuário, ou função não disponível.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      let imoveisData: Imovel[] = [];
+
+      if (userRole === 'cooperativa') { 
+        imoveisData = await getImoveisByCooperativaArea(userId); 
+      } else if (userRole === 'cidadao') { 
+        console.log(`Fazendo requisição para: cidadao/residencias/${userId}`); 
+        const response = await api.get(`cidadao/residencias/${userId}`).json<Imovel[]>(); 
+        imoveisData = response;
+      } else {
+        setError('Função de usuário inválida.');
+        setLoading(false);
+        return;
+      }
+
+      setImoveis(imoveisData);
+      setError(null);
+    } catch (err) {
+      setError('Falha ao carregar imóveis. Verifique sua conexão ou tente novamente.');
+      console.error('Erro ao carregar imóveis:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, userRole, authLoading]); 
 
   useEffect(() => {
-    const loadImoveis = async () => {
-      try {
-        setLoading(true);
-        const { userId, role } = await getTokenData();
-
-        if (!userId || !role) {
-          setError('User data not found');
-          return;
-        }
-
-        let imoveisData: Imovel[];
-        if (role === 'cooperativa') {
-          imoveisData = await getImoveisByCooperativaArea(userId);
-        } else if (role === 'cidadao') {
-          // fetch nos imoveis do usuario
-          const response = await api.get(`usuarios/${userId}/residencias`).json<Imovel[]>();
-          imoveisData = response;
-        } else {
-          setError('Invalid user role');
-          return;
-        }
-
-        setImoveis(imoveisData);
-        setError(null);
-      } catch (err) {
-        setError('Failed to load imoveis');
-        console.error('Error loading imoveis:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadImoveis();
-  }, []);
+  }, [loadImoveis]);
 
   return (
-    <ImoveisContext.Provider value={{ imoveis, setImoveis, loading, error }}>
+    <ImoveisContext.Provider value={{ imoveis, setImoveis, loading, error, refetchImoveis: loadImoveis }}>
       {children}
     </ImoveisContext.Provider>
   );
@@ -67,3 +79,5 @@ export const useImoveis = () => {
   }
   return context;
 };
+
+export type { Imovel };

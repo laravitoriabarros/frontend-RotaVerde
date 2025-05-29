@@ -128,7 +128,9 @@ export default function Login() {
         </TouchableOpacity>
       </View>
       {errors.senha && (
+
           <Text className="text-xs mb-4 text-red-500">{errors.senha?.message as string}</Text>
+
       )}
 
       {/* Botão esqueci a senha */}

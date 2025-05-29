@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import {useImoveis} from '~/providers/Imoveis-contexts';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useImoveis } from '~/providers/Imoveis-contexts';
 import {
   View,
   Text,
@@ -9,35 +9,88 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-interface Imovel {
-  id: number;
-  nome: string;
-  endereco: string;
-  status: string;
-}
+import { useAuth } from '~/providers/auth-context';
 
-export default function MeusImoveis() {
+export default function listaImovel() {
   const router = useRouter();
   const [modoExclusao, setModoExclusao] = useState(false);
-  const [selecionados, setSelecionados] = useState<number[]>([]);
-  const { imoveis, setImoveis } = useImoveis();
+  const [selecionados, setSelecionados] = useState<string[]>([]);
+  const { imoveis, setImoveis, refetchImoveis } = useImoveis();
+  const queryClient = useQueryClient();
 
+
+  const { userId, isLoading: authLoading } = useAuth(); 
+
+  useFocusEffect(
+    useCallback(() => {
+
+      if (!authLoading && userId) {
+        refetchImoveis();
+      }
+
+      return () => {
+        setModoExclusao(false);
+        setSelecionados([]);
+      };
+    }, [refetchImoveis, userId, authLoading]) 
+  );
  
+
+  const deleteImovelMutation = useMutation({
+    mutationFn: async (imovelIdsToDelete: string[]) => {
+      
+      if (!userId) {
+        throw new Error("ID do usuário não disponível. Por favor, faça login novamente.");
+      }
+
+      const deletePromises = imovelIdsToDelete.map(id =>
+        fetch(`http://192.168.0.18:5000/cidadao/deletar_residencias/${userId}/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }).then(async response => {
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || `Erro ao excluir imóvel com ID ${id}.`);
+          }
+          return id;
+        })
+      );
+      return Promise.all(deletePromises);
+    },
+    onSuccess: (deletedIds) => {
+      setImoveis(prev => prev.filter(i => !deletedIds.includes(i.id)));
+      Alert.alert('Sucesso!', `Imóvel(is) excluído(s) com sucesso.`);
+      setSelecionados([]);
+      setModoExclusao(false);
+      queryClient.invalidateQueries({ queryKey: ['imoveis', userId] });
+      refetchImoveis(); 
+    },
+    onError: (error) => {
+      Alert.alert('Erro ao excluir', `Não foi possível excluir o(s) imóvel(is): ${error.message}`);
+    }
+  });
+
   const confirmarExclusao = () => {
+    if (selecionados.length === 0) {
+      Alert.alert('Atenção', 'Selecione pelo menos um imóvel para excluir.');
+      return;
+    }
+
     Alert.alert(
       'Confirmar exclusão',
-      `Deseja excluir ${selecionados.length} imóvel(is)?`,
+      `Deseja excluir ${selecionados.length} imóvel(is) selecionado(s)? Esta ação é irreversível.`,
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cancelar', style: 'cancel', onPress: () => setModoExclusao(false) },
         {
           text: 'Confirmar',
           onPress: () => {
-            setImoveis(imoveis.filter((i) => !selecionados.includes(i.id)));
-            setSelecionados([]);
-            setModoExclusao(false);
+            deleteImovelMutation.mutate(selecionados);
           },
         },
       ]
@@ -48,8 +101,14 @@ export default function MeusImoveis() {
     router.push('/Usuario/cadastrar-imovel');
   };
 
-  const handleCardClick = (id: number) => {
-    router.push(`/Usuario/ver-imovel`);
+  const handleCardClick = (id: string) => {
+    router.push(`/Usuario/ver-imovel?id=${id}`);
+  };
+
+  const toggleSelecao = (id: string) => {
+    setSelecionados(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -66,6 +125,9 @@ export default function MeusImoveis() {
 
       {/* Lista rolável de imóveis */}
       <ScrollView contentContainerStyle={styles.cardsContainer}>
+        {imoveis.length === 0 && !authLoading && (
+          <Text style={styles.noImoveisText}>Nenhum imóvel cadastrado. Cadastre um novo!</Text>
+        )}
         {imoveis.map((imovel) => (
           <TouchableOpacity
             key={imovel.id}
@@ -73,15 +135,21 @@ export default function MeusImoveis() {
               styles.card,
               modoExclusao && selecionados.includes(imovel.id) && styles.cardSelecionado,
             ]}
-            onPress={() => handleCardClick(imovel.id)} // Enviando para a tela de detalhes
-            disabled={modoExclusao}
+            onPress={() => modoExclusao ? toggleSelecao(imovel.id) : handleCardClick(imovel.id)}
+            onLongPress={() => setModoExclusao(true)}
           >
             <View style={styles.cardContent}>
               <Icon name="home" size={30} color="#4EC063" />
               <View style={styles.cardText}>
-                <Text style={styles.cardTitle}>{imovel.nome}</Text>
-                <Text style={styles.cardAddress}>{imovel.endereco}</Text>
-                <Text style={styles.cardStatus}>{imovel.status}</Text>
+                <Text style={styles.cardTitle}>
+                  {imovel.endereco.logradouro}, {imovel.endereco.numero}
+                </Text>
+                <Text style={styles.cardAddress}>
+                  {imovel.endereco.bairro}, {imovel.endereco.cidade}
+                </Text>
+                <Text style={styles.cardStatus}>
+                  Status: {imovel.coletavel ? 'Lixo para Coleta' : 'Coleta Feita'}
+                </Text>
               </View>
               {modoExclusao && (
                 <Icon
@@ -96,19 +164,34 @@ export default function MeusImoveis() {
         ))}
       </ScrollView>
 
-      {/* Ações */}
+      {/* Botões de Ação */}
       <View style={styles.actions}>
         {modoExclusao ? (
-          <TouchableOpacity style={styles.confirmButton} onPress={confirmarExclusao}>
-            <Text style={styles.buttonText}>Confirmar</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={styles.cancelDeleteButton}
+              onPress={() => { setModoExclusao(false); setSelecionados([]); }}
+              disabled={deleteImovelMutation.isPending}
+            >
+                <Text style={styles.buttonText}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={confirmarExclusao}
+              disabled={selecionados.length === 0 || deleteImovelMutation.isPending}
+            >
+              <Text style={styles.buttonText}>
+                {deleteImovelMutation.isPending ? "Excluindo..." : `Confirmar Exclusão (${selecionados.length})`}
+              </Text>
+            </TouchableOpacity>
+          </>
         ) : (
           <TouchableOpacity style={styles.deleteButton} onPress={() => setModoExclusao(true)}>
             <Text style={styles.buttonText}>Excluir Imóvel</Text>
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity style={styles.addButton} onPress={handleCadastrarNovo}>
+        <TouchableOpacity style={styles.addButton} onPress={handleCadastrarNovo} disabled={modoExclusao}>
           <Text style={styles.buttonText}>Cadastrar Novo</Text>
         </TouchableOpacity>
       </View>
@@ -118,13 +201,13 @@ export default function MeusImoveis() {
         <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Usuario/pagina-inicial')}>
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Usuario/mapa')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/(private)/(cidadao)/map')}>
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Usuario/tutoriais')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/(private)/(cidadao)/tutorials')}>
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/perfil')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/(private)/(cidadao)/tutorials')}>
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
       </View>
@@ -151,6 +234,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginVertical: 10,
     elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
   },
   cardSelecionado: {
     borderColor: '#4EC063',
@@ -170,24 +257,39 @@ const styles = StyleSheet.create({
     right: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    gap: 10,
   },
   deleteButton: {
     backgroundColor: '#3629B7',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 5,
+    flex: 1,
+    alignItems: 'center',
   },
   confirmButton: {
+    backgroundColor: '#D9534F',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 5,
+    flex: 1,
+    alignItems: 'center',
+  },
+  cancelDeleteButton: {
+    backgroundColor: '#6c757d',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 5,
+    flex: 1,
+    alignItems: 'center',
+  },
+  addButton: {
     backgroundColor: '#4EC063',
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 5,
-  },
-  addButton: {
-    backgroundColor: '#3629B7',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 5,
+    flex: 1,
+    alignItems: 'center',
   },
   buttonText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
   navBar: {
@@ -203,4 +305,10 @@ const styles = StyleSheet.create({
     borderTopColor: '#E0E0E0',
   },
   navIcon: { padding: 10 },
+  noImoveisText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 18,
+    color: '#555',
+  },
 });
