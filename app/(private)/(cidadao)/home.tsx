@@ -23,7 +23,6 @@ export default function PaginaInicial() {
         Clique no ícone de mapa do menu inferior para acessar o mapa!
       </Text>
 
-      {/* Card 1 */}
       <TouchableOpacity
         style={[
           styles.card,
@@ -52,7 +51,6 @@ export default function PaginaInicial() {
         </View>
       </TouchableOpacity>
 
-      {/* Card 2 */}
       <TouchableOpacity
         style={[
           styles.card,
@@ -83,26 +81,23 @@ export default function PaginaInicial() {
 
 
       <View style={styles.navBar}>
-        {/* Ícone de Casa (Home) */}
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => handleNavigate('/Usuario/pagina-inicial')} // Home (Página inical)
+          onPress={() => handleNavigate('/home')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
 
-        {/* Ícone de Mapa */}
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => handleNavigate('/Usuario/mapa')} // Mapa
+          onPress={() => handleNavigate('/map')}
         >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
 
-        {/* Ícone de Informações */}
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => handleNavigate('Usuario/tutoriais')} // Tutoriais
+          onPress={() => handleNavigate('/tutorials')}
         >
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>

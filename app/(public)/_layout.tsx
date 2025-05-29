@@ -7,6 +7,9 @@ export default function AuthLayout() {
     const { token } = useAuth();
 
     if (token) {
+        console.log({
+                message: 'Tem Token - Public Layout'
+        })
         return <Redirect href={'/(private)' as Href} />;
     }
 

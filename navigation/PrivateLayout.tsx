@@ -9,15 +9,12 @@ export default function PrivateLayout() {
 
     useEffect(() => {
         if (!token) {
-            console.log('NÃO TEM TOKEN')
-            router.replace('/initial-decision');
-            return;
+            console.log({
+                message: 'Não tem Token - Private Layout'
+            })
+            return router.replace('/initial-decision')
         }
-    }, [token, userRole, router, segments, signOut]);
-
-    if (!token) {
-        return <Redirect href="/(public)/initial-decision" />;
-    }
+    }, [token, userRole, router, signOut]);
 
     return (
         <Stack>

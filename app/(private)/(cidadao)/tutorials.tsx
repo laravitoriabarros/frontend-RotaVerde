@@ -164,7 +164,7 @@ export default function Tutoriais() {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/mapa')}
+          onPress={() => router.push('/map')}
         >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>

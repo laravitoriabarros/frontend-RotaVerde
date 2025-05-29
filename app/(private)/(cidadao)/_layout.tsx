@@ -6,6 +6,7 @@ export default function CidadaoStack() {
             <Stack.Screen name="home" />
             <Stack.Screen name="profile" />
             <Stack.Screen name="tutorials" />
+            <Stack.Screen name="map" />
         </Stack>
     );
 }

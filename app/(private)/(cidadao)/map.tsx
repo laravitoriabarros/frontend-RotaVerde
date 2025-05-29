@@ -4,9 +4,9 @@ import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from '
 import MapView, { Marker } from 'react-native-maps';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/Feather';
+import CooperativaModal, { Cooperativa } from '~/app/Usuario/CooperativaModal';
 import { useImoveis } from '~/providers/Imoveis-contexts';
 import { getCooperativas } from '~/services/cooperativa/cooperativa-service';
-import CooperativaModal, { Cooperativa } from './CooperativaModal';
 
 export default function TelaMapa() {
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function TelaMapa() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        <Image source={require('../../../assets/images/logo.png')} style={styles.logo} />
       </View>
 
       <Modal
@@ -136,25 +136,25 @@ export default function TelaMapa() {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/pagina-inicial')}
+          onPress={() => router.push('/home')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/mapa')}
+          onPress={() => router.push('/map')}
         >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/tutoriais')}
+          onPress={() => router.push('/tutorials')}
         >
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/perfil')}
+          onPress={() => router.push('/profile')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
