@@ -6,7 +6,7 @@ import {
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
-import { useImoveis } from '~/providers/Imoveis-contexts'; 
+import { useImoveis } from '~/providers/Imoveis-contexts';
 
 
 export default function VerImovel() {
@@ -23,7 +23,7 @@ export default function VerImovel() {
   const [endereco, setEndereco] = useState(imovel?.endereco ?? '');
   const [lixoHoje, setLixoHoje] = useState('Sim');
 
- 
+
   useEffect(() => {
   if (imovel) {
     setNome(imovel.nome);
@@ -175,9 +175,9 @@ export default function VerImovel() {
             <View style={styles.pickerWrapper}>
               <Picker
                 selectedValue={lixoHoje}
-                onValueChange={setLixoHoje} 
+                onValueChange={setLixoHoje}
                 style={styles.picker}
-                enabled={!modoEdicao} 
+                enabled={!modoEdicao}
               >
                 <Picker.Item label="Sim" value="Sim" />
                 <Picker.Item label="Não" value="Não" />
@@ -194,16 +194,16 @@ export default function VerImovel() {
       </ScrollView>
 
       <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/home')}>
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Usuario/mapa')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/map')}>
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Usuario/tutoriais')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/tutorials')}>
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/perfil')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/profile')}>
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
       </View>

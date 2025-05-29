@@ -1,8 +1,8 @@
-import { setItemAsync } from "expo-secure-store";
 import { HTTPError } from "ky";
 import { z } from "zod";
 import { UserRoleEnum } from "~/lib/types/shared-types";
 import api from "../api-client";
+import { storeAuthData } from "./storage-service";
 
 export const loginFormSchema = z.object({
     email: z.string({
@@ -15,7 +15,18 @@ export const loginFormSchema = z.object({
 
 export type LoginFormData = z.infer<typeof loginFormSchema>
 
-export async function signInService(data : LoginFormData): Promise<any> {
+export interface ISignInResponse {
+    token: string
+    role: UserRoleEnum
+}
+
+export interface ISignInServiceResponse {
+    success: boolean;
+    message: string | null;
+    data: ISignInResponse | null;
+}
+
+export async function signInService(data : LoginFormData): Promise<ISignInServiceResponse> {
     try {
         const result = await api.post('auth/login', {
             json: data
@@ -24,10 +35,12 @@ export async function signInService(data : LoginFormData): Promise<any> {
             role: UserRoleEnum
         }>()
 
-        if(result.token) {
-            await setItemAsync('token', result.token)
+        if(result) {
+            await storeAuthData({
+                token: result.token,
+                role: result.role
+            })
         }
-
         return { success: true, message: null, data: result }
     } catch (err) {
         console.log(err)

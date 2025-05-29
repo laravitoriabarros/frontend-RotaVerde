@@ -1,30 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Href, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
-import CooperativaModal, { Cooperativa } from './CooperativaModal'; // ajuste o caminho se necessário
 
 export default function PaginaInicial() {
   const router = useRouter();
   const [selectedCard, setSelectedCard] = useState<number | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
 
-  const exemploCooperativa: Cooperativa = {
-    id: '1',
-    nome_usuario: 'João Silva',
-    nome_cooperativa: 'Cooperativa Rota Verde',
-    area_atuacao: ['Plásticos', 'Papéis', 'Metais'],
-    location: {
-      latitude: -9.649848,
-      longitude: -35.708949,
-    },
-    endereco: {
-      bairros_atendidos: ['Centro', 'Farol', 'Ponta Verde'],
-    },
-  };
-
-  const handleNavigate = (page: string) => {
-    router.push(page as Href);
+  const handleNavigate = (page: any) => {
+    router.push(page);
   };
 
   const handleCardPress = (index: number) => {
@@ -39,9 +23,11 @@ export default function PaginaInicial() {
         Clique no ícone de mapa do menu inferior para acessar o mapa!
       </Text>
 
-      {/* Card 1 */}
       <TouchableOpacity
-        style={[styles.card, selectedCard === 1 ? { backgroundColor: '#F0F0F0' } : {}]}
+        style={[
+          styles.card,
+          selectedCard === 1 ? { backgroundColor: '#F0F0F0' } : {}
+        ]}
         onPress={() => handleCardPress(1)}
         onLongPress={() => handleNavigate('Usuario/lista-imovel')}
       >
@@ -65,9 +51,11 @@ export default function PaginaInicial() {
         </View>
       </TouchableOpacity>
 
-      {/* Card 2 */}
       <TouchableOpacity
-        style={[styles.card, selectedCard === 2 ? { backgroundColor: '#F0F0F0' } : {}]}
+        style={[
+          styles.card,
+          selectedCard === 2 ? { backgroundColor: '#F0F0F0' } : {}
+        ]}
         onPress={() => handleCardPress(2)}
         onLongPress={() => handleNavigate('Usuario/rotas-diarias')}
       >
@@ -91,25 +79,33 @@ export default function PaginaInicial() {
         </View>
       </TouchableOpacity>
 
-      {/* Modal de Exemplo */}
-      <CooperativaModal
-        visible={modalVisible}
-        onClose={() => setModalVisible(false)}
-        cooperativa={exemploCooperativa}
-      />
 
-      {/* Barra de Navegação */}
       <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/Usuario/pagina-inicial')}>
+        <TouchableOpacity
+          style={styles.navIcon}
+          onPress={() => handleNavigate('/home')}
+        >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/Usuario/mapa')}>
+
+        <TouchableOpacity
+          style={styles.navIcon}
+          onPress={() => handleNavigate('/map')}
+        >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('Usuario/tutoriais')}>
+
+        <TouchableOpacity
+          style={styles.navIcon}
+          onPress={() => handleNavigate('/tutorials')}
+        >
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/perfil')}>
+
+        <TouchableOpacity
+          style={styles.navIcon}
+          onPress={() => handleNavigate('/profile')}
+        >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
       </View>
@@ -177,7 +173,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingBottom: 20,
-    position: 'absolute',
+    position: 'absolute', // Fixa a barra na parte inferior
     left: 0,
     right: 0,
     bottom: 0,
