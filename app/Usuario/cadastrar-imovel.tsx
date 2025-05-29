@@ -41,7 +41,7 @@ export default function CadastrarImovel() {
       } catch (error) {
         console.error("Erro ao obter userId:", error);
         Alert.alert("Erro de autenticação", "Não foi possível carregar os dados do seu usuário. Tente novamente ou faça login.");
-        router.push("/login");
+        router.push("/signin");
       } finally {
         setIsLoadingUser(false);
       }
