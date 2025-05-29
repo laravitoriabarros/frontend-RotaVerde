@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Href, useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import CooperativaModal, { Cooperativa } from './CooperativaModal'; // ajuste o caminho se necessário
 
@@ -24,7 +24,7 @@ export default function PaginaInicial() {
   };
 
   const handleNavigate = (page: string) => {
-    router.push(page);
+    router.push(page as Href);
   };
 
   const handleCardPress = (index: number) => {
