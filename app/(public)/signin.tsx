@@ -2,14 +2,14 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation } from '@tanstack/react-query';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { Controller, useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod'
-import { ISignInServiceResponse, LoginFormData, loginFormSchema, signInService } from '~/services/auth/login-service';
-import { useMutation } from '@tanstack/react-query';
-import { UserRoleEnum } from '~/lib/types/shared-types';
 import Toast from 'react-native-toast-message';
+import { UserRoleEnum } from '~/lib/types/shared-types';
 import { useAuth } from '~/providers/auth-context';
+import { ISignInServiceResponse, LoginFormData, loginFormSchema, signInService } from '~/services/auth/login-service';
 
 export default function Login() {
   const { signIn } = useAuth()
