@@ -1,59 +1,60 @@
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { getCoordinatesFromAddress } from '../utils/location';
-interface Imovel {
-  id: number;
-  nome: string;
-  endereco: string;
-  status: string;
-  latitude: number;
-  longitude: number;
-  lixoParaColetaHoje: boolean;
-}
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import api from '../services/api-client';
+import { getImoveisByCooperativaArea, Imovel } from '../services/residenceService';
+import { getTokenData } from '../utils/auth';
 
 interface ImoveisContextData {
   imoveis: Imovel[];
   setImoveis: React.Dispatch<React.SetStateAction<Imovel[]>>;
+  loading: boolean;
+  error: string | null;
 }
 
 const ImoveisContext = createContext<ImoveisContextData | undefined>(undefined);
 
-const rawImoveisData = [
-  { id: 1, nome: 'Casa 0221', endereco: 'Antares - Rua Sol', status: 'Lixo Reciclável Coleta 1234', latitude: 0, longitude: 0, lixoParaColetaHoje: false },
-  { id: 2, nome: 'Víctor Oliveira', endereco: 'Farol - Rua Estrela', status: 'Não Reciclável Coleta 1234', latitude: 0, longitude: 0, lixoParaColetaHoje: true  },
-  { id: 3, nome: 'Loja 01', endereco: 'Benedito Bentes', status: 'Lixo Reciclável Coleta 1234', latitude: 0, longitude: 0, lixoParaColetaHoje: true  },
-  { id: 4, nome: 'Fábrica 01', endereco: 'Cruz das Almas', status: 'Lixo Reciclável Coleta 1234', latitude: 0, longitude: 0, lixoParaColetaHoje: true  },
-];
-
 export const ImoveisProvider = ({ children }: { children: ReactNode }) => {
-  const [imoveis, setImoveis] = useState<Imovel[]>([]); // Começa com array vazio
+  const [imoveis, setImoveis] = useState<Imovel[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadImoveisWithCoords = async () => {
-      const loadedImoveis: Imovel[] = [];
-      for (const rawImovel of rawImoveisData) {
-        const fullAddress = `${rawImovel.endereco}, Maceió, Alagoas, Brasil`;
-        const coords = await getCoordinatesFromAddress(fullAddress);
+    const loadImoveis = async () => {
+      try {
+        setLoading(true);
+        const { userId, role } = await getTokenData();
 
-        if (coords) {
-          loadedImoveis.push({
-            ...rawImovel,
-            latitude: coords.latitude,
-            longitude: coords.longitude,
-          });
-        } else {
-          console.warn(`Não foi possível geocodificar o endereço: ${fullAddress}.`);
-          // Opcional: Adicionar com coordenadas padrão (0,0) ou ignorar o imóvel
-          loadedImoveis.push({ ...rawImovel, latitude: 0, longitude: 0 });
+        if (!userId || !role) {
+          setError('User data not found');
+          return;
         }
+
+        let imoveisData: Imovel[];
+        if (role === 'cooperativa') {
+          imoveisData = await getImoveisByCooperativaArea(userId);
+        } else if (role === 'cidadao') {
+          // fetch nos imoveis do usuario
+          const response = await api.get(`usuarios/${userId}/residencias`).json<Imovel[]>();
+          imoveisData = response;
+        } else {
+          setError('Invalid user role');
+          return;
+        }
+
+        setImoveis(imoveisData);
+        setError(null);
+      } catch (err) {
+        setError('Failed to load imoveis');
+        console.error('Error loading imoveis:', err);
+      } finally {
+        setLoading(false);
       }
-      setImoveis(loadedImoveis);
     };
 
-    loadImoveisWithCoords();
-  }, []); // O array vazio [] garante que isso rode apenas uma vez ao montar
+    loadImoveis();
+  }, []);
 
   return (
-    <ImoveisContext.Provider value={{ imoveis, setImoveis }}>
+    <ImoveisContext.Provider value={{ imoveis, setImoveis, loading, error }}>
       {children}
     </ImoveisContext.Provider>
   );
