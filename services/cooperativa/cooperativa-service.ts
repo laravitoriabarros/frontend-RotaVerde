@@ -17,7 +17,7 @@ export interface Cooperativa {
 export async function getCooperativas(): Promise<Cooperativa[]> {
     try {
         console.log('Fetching cooperativas...');
-        const response = await api.get('listar').json<Cooperativa[]>();
+        const response = await api.get('cooperativa/listar').json<Cooperativa[]>();
         console.log('Cooperativas response:', response);
         return response;
     } catch (error) {
@@ -29,7 +29,7 @@ export async function getCooperativas(): Promise<Cooperativa[]> {
 export async function getCooperativa(id: string): Promise<Cooperativa> {
     try {
         console.log('Fetching cooperativa with ID:', id);
-        const response = await api.get(`cooperativa/${id}`).json<Cooperativa>();
+        const response = await api.get(`cooperativa/cooperativa/${id}`).json<Cooperativa>();
         console.log('Cooperativa response:', response);
         return response;
     } catch (error) {
