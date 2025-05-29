@@ -7,7 +7,7 @@ export default function TelaCooperativa() {
   const router = useRouter();
 
   const goToPaginaInicial = () => {
-    router.push('/Cooperativa/pagina-inicial');
+    router.push('/home');
   };
 
   const goToGerenciarCaminhao = () => {
