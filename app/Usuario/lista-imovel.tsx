@@ -12,19 +12,18 @@ import {
 import { useRouter, useFocusEffect } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-// import { getTokenData } from '~/utils/auth'; // REMOVA ESTA IMPORTAÇÃO!
-import { useAuth } from '~/providers/auth-context'; // **NOVO: IMPORTE O useAuth**
+
+import { useAuth } from '~/providers/auth-context';
 
 export default function listaImovel() {
   const router = useRouter();
   const [modoExclusao, setModoExclusao] = useState(false);
   const [selecionados, setSelecionados] = useState<string[]>([]);
-  // Pegue 'imoveis' e 'refetchImoveis' do seu contexto de imóveis
   const { imoveis, setImoveis, refetchImoveis } = useImoveis();
   const queryClient = useQueryClient();
 
 
-  const { userId, isLoading: authLoading } = useAuth(); // Agora userId vem daqui!
+  const { userId, isLoading: authLoading } = useAuth(); 
 
   useFocusEffect(
     useCallback(() => {
@@ -49,7 +48,6 @@ export default function listaImovel() {
       }
 
       const deletePromises = imovelIdsToDelete.map(id =>
-        // **Use o userId aqui**
         fetch(`http://192.168.0.18:5000/cidadao/deletar_residencias/${userId}/${id}`, {
           method: 'DELETE',
           headers: {
@@ -70,9 +68,8 @@ export default function listaImovel() {
       Alert.alert('Sucesso!', `Imóvel(is) excluído(s) com sucesso.`);
       setSelecionados([]);
       setModoExclusao(false);
-      // **Invalide as queries para 'imoveis' com base no userId**
       queryClient.invalidateQueries({ queryKey: ['imoveis', userId] });
-      refetchImoveis(); // Garante a sincronização com o backend
+      refetchImoveis(); 
     },
     onError: (error) => {
       Alert.alert('Erro ao excluir', `Não foi possível excluir o(s) imóvel(is): ${error.message}`);
@@ -128,7 +125,6 @@ export default function listaImovel() {
 
       {/* Lista rolável de imóveis */}
       <ScrollView contentContainerStyle={styles.cardsContainer}>
-        {/* Adicione um indicador de loading enquanto os imóveis são carregados */}
         {imoveis.length === 0 && !authLoading && (
           <Text style={styles.noImoveisText}>Nenhum imóvel cadastrado. Cadastre um novo!</Text>
         )}
