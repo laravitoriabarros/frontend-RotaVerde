@@ -91,20 +91,6 @@ export default function PaginaInicial() {
         </View>
       </TouchableOpacity>
 
-      {/* Botão Testar Modal */}
-      <TouchableOpacity
-        style={{
-          backgroundColor: '#3629B7',
-          padding: 15,
-          borderRadius: 8,
-          alignItems: 'center',
-          marginTop: 20,
-        }}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={{ color: 'white', fontWeight: 'bold' }}>Testar Modal</Text>
-      </TouchableOpacity>
-
       {/* Modal de Exemplo */}
       <CooperativaModal
         visible={modalVisible}
