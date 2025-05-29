@@ -43,9 +43,9 @@ export default function TelaCooperativa() {
           return;
         }
 
-        console.log('Fetching cooperativa with ID:', userId);
+        // console.log('Fetching cooperativa with ID:', userId);
         const response = await getCooperativa(userId);
-        console.log('Cooperativa response:', response);
+        // console.log('Cooperativa response:', response);
         setCooperativa(response);
       } catch (err) {
         console.error('Error loading cooperativa:', err);

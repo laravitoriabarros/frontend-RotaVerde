@@ -103,7 +103,7 @@ export default function TelaMapa() {
         }}
         provider="google"
       >
-        {imoveis.filter(imovel => imovel.coletavel === true)
+        {imoveis
         .map((imovel) => (
           <Marker
             key={imovel.id}
