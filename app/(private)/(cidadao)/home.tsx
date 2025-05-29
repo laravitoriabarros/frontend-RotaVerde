@@ -107,10 +107,9 @@ export default function PaginaInicial() {
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
 
-        {/* Ícone de Perfil */}
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => handleNavigate('/perfil')} // Perfil
+          onPress={() => handleNavigate('/profile')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>

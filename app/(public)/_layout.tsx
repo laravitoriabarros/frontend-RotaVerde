@@ -11,7 +11,9 @@ export default function AuthLayout() {
     }
 
     return (
-        <Stack>
+        <Stack screenOptions={{
+            headerShown: false
+        }}>
             <Stack.Screen name="initial-decision" />
             <Stack.Screen name="register" />
             <Stack.Screen name="signin" />

@@ -18,7 +18,7 @@ export default function Perfil() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={require('../../assets/images/perfil-roxo-mulher.png')}
+          source={require('../../../assets/images/perfil-roxo-mulher.png')}
           style={styles.profileImage}
         />
         <Text style={styles.changePhoto}>Mudar Foto</Text>
@@ -52,13 +52,13 @@ export default function Perfil() {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Motorista/pagina-inicial')} // Página inicial
+          onPress={() => router.push('/home')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Motorista/perfil-motorista')} // Perfil
+          onPress={() => router.push('/profile')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>

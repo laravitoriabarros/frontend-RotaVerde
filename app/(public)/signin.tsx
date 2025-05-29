@@ -70,7 +70,7 @@ export default function Login() {
   };
 
   return (
-    <View className="flex bg-white px-5 pt-20">
+    <View className="flex flex-1 bg-white px-5 pt-20">
       <Image
         source={require('../../assets/images/logo.png')}
         className='w-full h-32 mb-5'

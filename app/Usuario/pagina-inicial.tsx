@@ -1,18 +1,34 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router'; 
-import Icon from 'react-native-vector-icons/Feather'; 
+import { useRouter } from 'expo-router';
+import Icon from 'react-native-vector-icons/Feather';
+import CooperativaModal, { Cooperativa } from './CooperativaModal'; // ajuste o caminho se necessário
 
 export default function PaginaInicial() {
   const router = useRouter();
-  const [selectedCard, setSelectedCard] = useState<number | null>(null); 
+  const [selectedCard, setSelectedCard] = useState<number | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const exemploCooperativa: Cooperativa = {
+    id: '1',
+    nome_usuario: 'João Silva',
+    nome_cooperativa: 'Cooperativa Rota Verde',
+    area_atuacao: ['Plásticos', 'Papéis', 'Metais'],
+    location: {
+      latitude: -9.649848,
+      longitude: -35.708949,
+    },
+    endereco: {
+      bairros_atendidos: ['Centro', 'Farol', 'Ponta Verde'],
+    },
+  };
 
   const handleNavigate = (page: string) => {
     router.push(page);
   };
 
   const handleCardPress = (index: number) => {
-    setSelectedCard(index); 
+    setSelectedCard(index);
   };
 
   return (
@@ -25,12 +41,9 @@ export default function PaginaInicial() {
 
       {/* Card 1 */}
       <TouchableOpacity
-        style={[
-          styles.card,
-          selectedCard === 1 ? { backgroundColor: '#F0F0F0' } : {} 
-        ]}
+        style={[styles.card, selectedCard === 1 ? { backgroundColor: '#F0F0F0' } : {}]}
         onPress={() => handleCardPress(1)}
-        onLongPress={() => handleNavigate('Usuario/lista-imovel')} 
+        onLongPress={() => handleNavigate('Usuario/lista-imovel')}
       >
         <Text style={styles.cardTitle}>Acompanhamento Residencial</Text>
         <Text style={styles.cardDescription}>
@@ -39,13 +52,13 @@ export default function PaginaInicial() {
         <View style={styles.cardButtons}>
           <TouchableOpacity
             style={styles.buttonSecondary}
-            onPress={() => handleNavigate('Usuario/lista-imovel')} 
+            onPress={() => handleNavigate('Usuario/lista-imovel')}
           >
             <Text style={styles.buttonText}>Ver Meus Imóveis</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonPrimary}
-            onPress={() => handleNavigate('Usuario/cadastrar-imovel')}  
+            onPress={() => handleNavigate('Usuario/cadastrar-imovel')}
           >
             <Text style={styles.buttonText}>Cadastrar</Text>
           </TouchableOpacity>
@@ -54,10 +67,7 @@ export default function PaginaInicial() {
 
       {/* Card 2 */}
       <TouchableOpacity
-        style={[
-          styles.card,
-          selectedCard === 2 ? { backgroundColor: '#F0F0F0' } : {} 
-        ]}
+        style={[styles.card, selectedCard === 2 ? { backgroundColor: '#F0F0F0' } : {}]}
         onPress={() => handleCardPress(2)}
         onLongPress={() => handleNavigate('Usuario/rotas-diarias')}
       >
@@ -68,50 +78,38 @@ export default function PaginaInicial() {
         <View style={styles.cardButtons}>
           <TouchableOpacity
             style={styles.buttonSecondary}
-            onPress={() => handleNavigate('Usuario/confirmacao-coleta')}  
+            onPress={() => handleNavigate('Usuario/confirmacao-coleta')}
           >
             <Text style={styles.buttonText}>Confirmar Coleta</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.buttonPrimary}
-            onPress={() => handleNavigate('Usuario/rotas-diarias')} 
+            onPress={() => handleNavigate('Usuario/rotas-diarias')}
           >
             <Text style={styles.buttonText}>Visualizar</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>
 
-      
+      {/* Modal de Exemplo */}
+      <CooperativaModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        cooperativa={exemploCooperativa}
+      />
+
+      {/* Barra de Navegação */}
       <View style={styles.navBar}>
-        {/* Ícone de Casa (Home) */}
-        <TouchableOpacity
-          style={styles.navIcon}
-          onPress={() => handleNavigate('/Usuario/pagina-inicial')} // Home (Página inical)
-        >
+        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/Usuario/pagina-inicial')}>
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-
-        {/* Ícone de Mapa */}
-        <TouchableOpacity
-          style={styles.navIcon}
-          onPress={() => handleNavigate('/Usuario/mapa')} // Mapa
-        >
+        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/Usuario/mapa')}>
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-
-        {/* Ícone de Informações */}
-        <TouchableOpacity
-          style={styles.navIcon}
-          onPress={() => handleNavigate('Usuario/tutoriais')} // Tutoriais
-        >
+        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('Usuario/tutoriais')}>
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
-
-        {/* Ícone de Perfil */}
-        <TouchableOpacity
-          style={styles.navIcon}
-          onPress={() => handleNavigate('/perfil')} // Perfil
-        >
+        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/perfil')}>
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
       </View>
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   title: {
-    fontSize: 30, 
+    fontSize: 30,
     fontWeight: 'bold',
     color: '#2F2F2F',
   },
@@ -179,7 +177,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingBottom: 20,
-    position: 'absolute', // Fixa a barra na parte inferior
+    position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
