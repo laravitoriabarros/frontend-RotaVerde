@@ -16,6 +16,7 @@ export const registerCidadaoFormSchema = z.object({
     email: z.string({
         required_error: 'E-mail é obrigatório.'
     }).email('E-mail inválido.'),
+    endereco: enderecoSchema,
     senha: z.string({
         required_error: 'Senha é obrigatória.'
     }).min(1, { message: 'Senha é obrigatória.' }),
@@ -52,14 +53,6 @@ export const registerMotoristaFormSchema = z.object({
         path: ['confirmar_senha'],
     },
 )
-
-export const registerMotoristaServiceSchema = z.object({
-    nome_usuario: z.string(),
-    senha: z.string(),
-    email: z.string(),
-    telefone: z.string(),
-    nome_cooperativa: z.string(),
-})
 
 export const registerCooperativaFormSchema = z.object({
     nome_usuario: z.string({
@@ -112,6 +105,14 @@ export const registerCooperativaServiceSchema = z.object({
     telefone: z.string(),
     nome_cooperativa: z.string(),
     cnpj: z.string(),
+})
+
+export const registerMotoristaServiceSchema = z.object({
+    nome_usuario: z.string(),
+    senha: z.string(),
+    email: z.string(),
+    telefone: z.string(),
+    nome_cooperativa: z.string(),
 })
 
 export type RegisterMotoristaServiceData = z.infer<typeof registerMotoristaServiceSchema>

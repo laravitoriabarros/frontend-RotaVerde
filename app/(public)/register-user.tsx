@@ -10,6 +10,7 @@ import { useMutation } from '@tanstack/react-query';
 import { removeMask } from '~/lib/parse';
 import Toast from 'react-native-toast-message';
 import { ShowHiddenPassword } from '~/components/ui/show-hidden-password';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function CadastroUsuario() {
   const router = useRouter();
@@ -21,6 +22,12 @@ export default function CadastroUsuario() {
       telefone: '',
       email: '',
       senha: '',
+      endereco: {
+        bairro: '',
+        cidade: '',
+        logradouro: '',
+        numero: '',
+      },
       role: 'cidadao'
     }
   })
@@ -57,13 +64,14 @@ export default function CadastroUsuario() {
         <Icon name="arrow-left" size={28} color="#4EC063" />
       </TouchableOpacity>
 
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
       <Image
         source={require('../../assets/images/logo.png')}
         style={styles.image}
         resizeMode="contain"
       />
 
-      <Text style={styles.title}>Cadastre-seeee</Text>
+      <Text style={styles.title}>Cadastre-se</Text>
 
       <Text style={styles.label}>Nome</Text>
       <Controller
@@ -124,6 +132,82 @@ export default function CadastroUsuario() {
         <Text className="text-xs mb-4 text-red-500">{errors.telefone?.message}</Text>
       )}
 
+       <Text style={styles.label}>Nome da Cidade</Text>
+              <Controller
+                control={control}
+                name='endereco.cidade'
+                render={({ field: { onChange, value, onBlur, ...field } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Digite o cidade..."
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.endereco?.cidade && (
+                <Text className="text-xs mb-4 text-red-500">{errors.endereco?.cidade.message}</Text>
+              )}
+
+
+
+              <Text style={styles.label}>Nome do Bairro</Text>
+              <Controller
+                control={control}
+                name='endereco.bairro'
+                render={({ field: { onChange, value, onBlur, ...field } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Digite o bairro..."
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.endereco?.bairro && (
+                <Text className="text-xs mb-4 text-red-500">{errors.endereco?.bairro.message}</Text>
+              )}
+
+
+              <Text style={styles.label}>Nome da Rua</Text>
+              <Controller
+                control={control}
+                name='endereco.logradouro'
+                render={({ field: { onChange, value, onBlur, ...field } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Digite o nome da rua..."
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.endereco?.logradouro && (
+                <Text className="text-xs mb-4 text-red-500">{errors.endereco?.logradouro.message}</Text>
+              )}
+
+
+              <Text style={styles.label}>Número do Imóvel</Text>
+              <Controller
+                control={control}
+                name='endereco.numero'
+                render={({ field: { onChange, value, onBlur, ...field } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Digite o número..."
+                    value={value}
+                    onChangeText={onChange}
+                    onBlur={onBlur}
+                  />
+                )}
+              />
+              {errors.endereco?.numero && (
+                <Text className="text-xs mb-4 text-red-500">{errors.endereco?.numero.message}</Text>
+              )}
+
       <Text style={styles.label}>Senha</Text>
       <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
         <Controller
@@ -152,6 +236,7 @@ export default function CadastroUsuario() {
       <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
         <Text style={styles.buttonText}>Cadastrar</Text>
       </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 }
@@ -160,8 +245,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+    scrollContent: {
+    paddingTop: 100,
     paddingHorizontal: 20,
-    paddingTop: 40,
+    paddingBottom: 40,
   },
   backButton: {
     position: 'absolute',
