@@ -12,9 +12,9 @@ export default function PrivateLayout() {
             console.log({
                 message: 'Não tem Token - Private Layout'
             })
-            return
+            return router.replace('/initial-decision')
         }
-    }, [token, userRole, router, segments, signOut]);
+    }, [token, userRole, router, signOut]);
 
     return (
         <Stack>

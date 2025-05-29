@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import MapView from 'react-native-maps';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function TelaCooperativa() {
@@ -29,8 +30,17 @@ export default function TelaCooperativa() {
         <Image source={require('../../../assets/images/logo.png')} style={styles.logo} />
       </View>
 
-      {/* Imagem de mapa */}
-      <Image source={require('../../../assets/images/mapa-cooperativa.png')} style={styles.mapImage} />
+      {/* Mapa real */}
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: -9.6498487,
+          longitude: -35.7089492,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+        provider="google"
+      />
 
       {/* Barra inferior */}
       <View style={styles.navBar}>
@@ -68,10 +78,8 @@ const styles = StyleSheet.create({
     height: 40,
     resizeMode: 'contain',
   },
-  mapImage: {
-    width: '100%',
-    height: '80%',
-    resizeMode: 'cover',
+  map: {
+    flex: 1,
   },
   navBar: {
     flexDirection: 'row',

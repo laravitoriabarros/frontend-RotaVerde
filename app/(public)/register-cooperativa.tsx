@@ -20,7 +20,7 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 export default function CadastroCooperativa() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const { control, handleSubmit, formState: { errors } } = useForm({
+  const { control, handleSubmit, formState: { errors }, setValue } = useForm({
     resolver: zodResolver(registerCooperativaFormSchema),
     defaultValues: {
       nome_usuario: '',
@@ -31,6 +31,13 @@ export default function CadastroCooperativa() {
       nome_cooperativa: '',
       confirmar_senha: '',
       area_atuacao: [],
+      materiais_reciclaveis: [],
+      endereco: {
+        bairro: '',
+        cidade: '',
+        logradouro: '',
+        numero: ''
+      },
       role: 'cooperativa'
     }
   })
@@ -81,9 +88,18 @@ export default function CadastroCooperativa() {
 
   const toggleMaterial = (material: string) => {
     if (materiaisSelecionados.includes(material)) {
-      setMateriaisSelecionados((prev) => prev.filter((m) => m !== material));
+      setMateriaisSelecionados((prev) => {
+        const newValue = [...new Set(prev.filter((m) => m !== material))]
+        setValue('materiais_reciclaveis', newValue)
+        return newValue
+      });
     } else {
       setMateriaisSelecionados((prev) => [...prev, material]);
+      setMateriaisSelecionados(currentState => {
+        const newValue = [...new Set([...currentState, material])]
+        setValue('materiais_reciclaveis', newValue)
+        return newValue
+      })
     }
   };
 
@@ -189,21 +205,21 @@ export default function CadastroCooperativa() {
               <Text style={styles.label}>Bairros de atuação:</Text>
               <SV className='max-h-48 flex-1'>
                 {BAIRROS.map((bairro) => (
-                <TouchableOpacity
-                  key={bairro}
-                  style={styles.checkboxContainer}
-                  onPress={() => onChange(toggleSelection(value, bairro))}
-                  activeOpacity={0.7}
-                >
-                  <Checkbox
-                    value={isSelected(value, bairro)}
-                    onValueChange={() => onChange(toggleSelection(value, bairro))}
-                    color={isSelected(value, bairro) ? '#4EC063' : undefined}
-                    style={styles.checkbox}
-                  />
-                  <Text style={styles.checkboxLabel}>{bairro}</Text>
-                </TouchableOpacity>
-              ))}
+                  <TouchableOpacity
+                    key={bairro}
+                    style={styles.checkboxContainer}
+                    onPress={() => onChange(toggleSelection(value, bairro))}
+                    activeOpacity={0.7}
+                  >
+                    <Checkbox
+                      value={isSelected(value, bairro)}
+                      onValueChange={() => onChange(toggleSelection(value, bairro))}
+                      color={isSelected(value, bairro) ? '#4EC063' : undefined}
+                      style={styles.checkbox}
+                    />
+                    <Text style={styles.checkboxLabel}>{bairro}</Text>
+                  </TouchableOpacity>
+                ))}
               </SV>
             </View>
           )}
@@ -253,6 +269,110 @@ export default function CadastroCooperativa() {
           <Text className="text-xs mb-4 text-red-500">{errors.telefone?.message}</Text>
         )}
 
+        <Text style={styles.label}>Nome da Cidade</Text>
+        <Controller
+          control={control}
+          name='endereco.cidade'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Digite o cidade..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
+        />
+        {errors.endereco?.cidade && (
+          <Text className="text-xs mb-4 text-red-500">{errors.endereco?.cidade.message}</Text>
+        )}
+
+
+
+        <Text style={styles.label}>Nome do Bairro</Text>
+        <Controller
+          control={control}
+          name='endereco.bairro'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Digite o bairro..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
+        />
+        {errors.endereco?.bairro && (
+          <Text className="text-xs mb-4 text-red-500">{errors.endereco?.bairro.message}</Text>
+        )}
+
+
+        <Text style={styles.label}>Nome da Rua</Text>
+        <Controller
+          control={control}
+          name='endereco.logradouro'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Digite o nome da rua..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
+        />
+        {errors.endereco?.logradouro && (
+          <Text className="text-xs mb-4 text-red-500">{errors.endereco?.logradouro.message}</Text>
+        )}
+
+
+        <Text style={styles.label}>Número do Imóvel</Text>
+        <Controller
+          control={control}
+          name='endereco.numero'
+          render={({ field: { onChange, value, onBlur, ...field } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Digite o número..."
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
+            />
+          )}
+        />
+        {errors.endereco?.numero && (
+          <Text className="text-xs mb-4 text-red-500">{errors.endereco?.numero.message}</Text>
+        )}
+
+        <Text style={styles.label}>Selecione os materiais que você coleta:</Text>
+        <View style={styles.materialGrid}>
+          {Object.entries(iconesPorMaterial).map(([material, icon]) => {
+            const selecionado = materiaisSelecionados.includes(material);
+            return (
+              <TouchableOpacity
+                key={material}
+                style={styles.materialWrapper}
+                onPress={() => toggleMaterial(material)}
+                activeOpacity={0.8}
+              >
+                <View
+                  style={[
+                    styles.circle,
+                    { backgroundColor: selecionado ? '#3629B7' : '#4EC063' },
+                  ]}
+                >
+                  {icon}
+                </View>
+                <Text style={styles.materialText}>{material}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        {errors.materiais_reciclaveis && (
+          <Text className="text-xs mb-4 text-red-500">{errors.materiais_reciclaveis?.message}</Text>
+        )}
+
         <Text style={styles.label}>Senha</Text>
         <View className='flex flex-row items-center border border-gray-300 rounded-lg px-3 mb-5'>
           <Controller
@@ -298,32 +418,6 @@ export default function CadastroCooperativa() {
         {errors.confirmar_senha && (
           <Text className="text-xs mb-4 text-red-500">{errors.confirmar_senha?.message}</Text>
         )}
-
-        <Text style={styles.label}>Selecione os materiais que você coleta:</Text>
-        <View style={styles.materialGrid}>
-          {Object.entries(iconesPorMaterial).map(([material, icon]) => {
-            const selecionado = materiaisSelecionados.includes(material);
-            return (
-              <TouchableOpacity
-                key={material}
-                style={styles.materialWrapper}
-                onPress={() => toggleMaterial(material)}
-                activeOpacity={0.8}
-              >
-                <View
-                  style={[
-                    styles.circle,
-                    { backgroundColor: selecionado ? '#3629B7' : '#4EC063' },
-                  ]}
-                >
-                  {icon}
-                </View>
-                <Text style={styles.materialText}>{material}</Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
 
         <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
           <Text style={styles.buttonText}>Cadastrar</Text>
@@ -428,7 +522,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-    materialGrid: {
+  materialGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
