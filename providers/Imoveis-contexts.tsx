@@ -1,8 +1,7 @@
 import React, { createContext, ReactNode, useContext, useEffect, useState, useCallback } from 'react';
 import api from '../services/api-client';
 import { getImoveisByCooperativaArea, Imovel } from '../services/residenceService';
-
-import { useAuth } from './auth-context'; 
+import { useAuth } from './auth-context';
 
 export interface ImoveisContextData {
   imoveis: Imovel[];
@@ -20,15 +19,15 @@ export const ImoveisProvider = ({ children }: { children: ReactNode }) => {
   const [imoveis, setImoveis] = useState<Imovel[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   const loadImoveis = useCallback(async () => {
-    
+
     if (authLoading) {
-      setLoading(true); 
+      setLoading(true);
       return;
     }
 
-    if (!userId || !userRole) { 
+    if (!userId || !userRole) {
       setImoveis([]);
       setLoading(false);
       setError('Nenhum usuário logado, ID de usuário, ou função não disponível.');
@@ -39,11 +38,11 @@ export const ImoveisProvider = ({ children }: { children: ReactNode }) => {
       setLoading(true);
       let imoveisData: Imovel[] = [];
 
-      if (userRole === 'cooperativa') { 
-        imoveisData = await getImoveisByCooperativaArea(userId); 
-      } else if (userRole === 'cidadao') { 
-        console.log(`Fazendo requisição para: cidadao/residencias/${userId}`); 
-        const response = await api.get(`cidadao/residencias/${userId}`).json<Imovel[]>(); 
+      if (userRole === 'cooperativa') {
+        imoveisData = await getImoveisByCooperativaArea(userId);
+      } else if (userRole === 'cidadao') {
+        console.log(`Fazendo requisição para: cidadao/residencias/${userId}`);
+        const response = await api.get(`cidadao/residencias/${userId}`).json<Imovel[]>();
         imoveisData = response;
       } else {
         setError('Função de usuário inválida.');
@@ -59,7 +58,7 @@ export const ImoveisProvider = ({ children }: { children: ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  }, [userId, userRole, authLoading]); 
+  }, [userId, userRole, authLoading]);
 
   useEffect(() => {
     loadImoveis();

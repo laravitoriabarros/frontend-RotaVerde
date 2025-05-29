@@ -23,7 +23,7 @@ export default function listaImovel() {
   const queryClient = useQueryClient();
 
 
-  const { userId, isLoading: authLoading } = useAuth(); 
+  const { userId, isLoading: authLoading } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
@@ -36,19 +36,19 @@ export default function listaImovel() {
         setModoExclusao(false);
         setSelecionados([]);
       };
-    }, [refetchImoveis, userId, authLoading]) 
+    }, [refetchImoveis, userId, authLoading])
   );
- 
+
 
   const deleteImovelMutation = useMutation({
     mutationFn: async (imovelIdsToDelete: string[]) => {
-      
+
       if (!userId) {
         throw new Error("ID do usuário não disponível. Por favor, faça login novamente.");
       }
 
       const deletePromises = imovelIdsToDelete.map(id =>
-        fetch(`http://192.168.0.18:5000/cidadao/deletar_residencias/${userId}/${id}`, {
+        fetch(process.env.EXPO_PUBLIC_API_URL + `/cidadao/deletar_residencias/${userId}/${id}`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -69,7 +69,7 @@ export default function listaImovel() {
       setSelecionados([]);
       setModoExclusao(false);
       queryClient.invalidateQueries({ queryKey: ['imoveis', userId] });
-      refetchImoveis(); 
+      refetchImoveis();
     },
     onError: (error) => {
       Alert.alert('Erro ao excluir', `Não foi possível excluir o(s) imóvel(is): ${error.message}`);

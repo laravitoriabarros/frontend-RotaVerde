@@ -14,9 +14,10 @@ import Icon from "react-native-vector-icons/Feather";
 import MapView, { Marker } from "react-native-maps";
 import { Picker } from "@react-native-picker/picker";
 import { useMutation } from "@tanstack/react-query";
-import { getAddressFromCoordinates } from "~/utils/location"; 
+import { getAddressFromCoordinates } from "~/utils/location";
 import { getTokenData } from "~/utils/auth";
-import * as Location from 'expo-location'; 
+import * as Location from 'expo-location';
+import api from "~/services/api-client";
 
 export default function CadastrarImovel() {
   const router = useRouter();
@@ -27,7 +28,7 @@ export default function CadastrarImovel() {
   const [nome, setNome] = useState("");
   const [tipoImovel, setTipoImovel] = useState("");
   const [lixoReciclavel, setLixoReciclavel] = useState("");
-  const [enderecoFormatado, setEnderecoFormatado] = useState("Nenhuma localização selecionada"); 
+  const [enderecoFormatado, setEnderecoFormatado] = useState("Nenhuma localização selecionada");
   const [enderecoCompleto, setEnderecoCompleto] = useState<Location.LocationGeocodedAddress | null>(null);
   const [localizacao, setLocalizacao] = useState<{ latitude: number; longitude: number } | null>(null);
   const [mostrarMapa, setMostrarMapa] = useState(false);
@@ -54,7 +55,7 @@ export default function CadastrarImovel() {
     router.back();
   };
 
-  
+
   const handleMapPress = async (event: { nativeEvent: { coordinate: { latitude: number; longitude: number } } }) => {
     const { latitude, longitude } = event.nativeEvent.coordinate;
     setLocalizacao({ latitude, longitude });
@@ -62,22 +63,22 @@ export default function CadastrarImovel() {
     const addresses = await getAddressFromCoordinates({ latitude, longitude });
     if (addresses && addresses.length > 0) {
       const firstAddress = addresses[0];
-      setEnderecoCompleto(firstAddress); 
+      setEnderecoCompleto(firstAddress);
 
-      
+
       const formatted = [
-        firstAddress.street, 
-        firstAddress.streetNumber, 
-        firstAddress.district, 
-        firstAddress.city, 
-        firstAddress.region, 
-        firstAddress.postalCode 
-      ].filter(Boolean).join(', '); 
+        firstAddress.street,
+        firstAddress.streetNumber,
+        firstAddress.district,
+        firstAddress.city,
+        firstAddress.region,
+        firstAddress.postalCode
+      ].filter(Boolean).join(', ');
 
       setEnderecoFormatado(formatted || "Endereço não encontrado");
     } else {
       setEnderecoFormatado("Endereço não encontrado para este local.");
-      setEnderecoCompleto(null); 
+      setEnderecoCompleto(null);
     }
   };
 
@@ -85,12 +86,12 @@ export default function CadastrarImovel() {
     if (!userId) {
       throw new Error("ID do usuário não disponível. Por favor, faça login novamente.");
     }
-    const response = await fetch(`http://192.168.0.18:5000/cidadao/cadastrar_residencias/${userId}`, {
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/cidadao/cadastrar_residencias/${userId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(dados),
     });
-
+    console.log('bateu na api')
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ message: "Erro desconhecido" }));
       throw new Error(errorData.message || "Erro ao cadastrar o imóvel");
@@ -111,7 +112,7 @@ export default function CadastrarImovel() {
   });
 
   const handleSubmit = () => {
-    
+
     if (!nome || !tipoImovel || !localizacao || !enderecoCompleto) {
       Alert.alert("Atenção", "Por favor, preencha todos os campos obrigatórios (Nome, Tipo de Imóvel, Localização e Endereço).");
       return;
@@ -126,9 +127,9 @@ export default function CadastrarImovel() {
       tipoImovel,
       lixoReciclavel: lixoReciclavel === "sim" ? true : false,
       endereco: {
-        
+
         logradouro: enderecoCompleto.street || "",
-        numero: enderecoCompleto.streetNumber || "", 
+        numero: enderecoCompleto.streetNumber || "",
         bairro: enderecoCompleto.district || "",
         cidade: enderecoCompleto.city || "",
         estado: enderecoCompleto.region || "",
