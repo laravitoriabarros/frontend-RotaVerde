@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { tutorialContent } from './util/tutorialContent';
+import { tutorialContent } from '~/app/Usuario/util/tutorialContent';
 
 export default function Tutoriais() {
   const router = useRouter();
@@ -157,7 +157,7 @@ export default function Tutoriais() {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/pagina-inicial')}
+          onPress={() => router.push('/(private)/(cooperativa)/home')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
@@ -169,13 +169,13 @@ export default function Tutoriais() {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/tutoriais')}
+          onPress={() => router.push('/tutorials')}
         >
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/perfil')}
+          onPress={() => router.push('/profile')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>

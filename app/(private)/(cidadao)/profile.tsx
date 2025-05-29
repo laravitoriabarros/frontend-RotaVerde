@@ -36,7 +36,7 @@ export default function Perfil() {
           <Icon name="arrow-left" size={26} color="white" />
         </TouchableOpacity>
         <Image
-          source={require('../assets/images/perfil-roxo-mulher.png')}
+          source={require('../../../assets/images/perfil-roxo-mulher.png')}
           style={styles.profileImage}
         />
         <TouchableOpacity onPress={() => setShowUploadModal(true)}>
@@ -85,7 +85,7 @@ export default function Perfil() {
                 style={[styles.modalButton, { backgroundColor: '#4EC063' }]}
                 onPress={() => {
                   setShowDeleteModal(false);
-                  router.push('/pagina-decisao-inicial');
+                  router.push('/initial-decision');
                 }}
               >
                 <Text style={styles.modalButtonText}>Sim</Text>

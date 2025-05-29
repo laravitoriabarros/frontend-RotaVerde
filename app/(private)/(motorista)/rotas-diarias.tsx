@@ -20,7 +20,7 @@ export default function RotasDiarias() {
         <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
           <Icon name="arrow-left" size={24} color="white" />
         </TouchableOpacity>
-        <Image source={require('../../assets/images/rota.png')} style={styles.image} />
+        <Image source={require('../../../assets/images/rota.png')} style={styles.image} />
       </View>
 
       <Text style={styles.title}>Rotas de Hoje</Text>
@@ -54,13 +54,13 @@ export default function RotasDiarias() {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Motorista/pagina-inicial')}
+          onPress={() => router.push('/home')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/perfil')}
+          onPress={() => router.push('/profile')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
