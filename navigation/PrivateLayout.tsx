@@ -14,6 +14,24 @@ export default function PrivateLayout() {
             })
             return router.replace('/initial-decision')
         }
+
+        switch (userRole) {
+            case 'cidadao':
+                router.push('/(private)/(cidadao)/home')
+                break;
+            case 'cooperativa':
+                router.push('/(private)/(cooperativa)/home')
+                break;
+            case 'motorista':
+                router.push('/(private)/(motorista)/home')
+                break;
+            default:
+                break;
+        }
+
+
+
+
     }, [token, userRole, router, signOut]);
 
     return (

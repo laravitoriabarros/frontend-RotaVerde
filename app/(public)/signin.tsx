@@ -45,7 +45,6 @@ export default function Login() {
   }
 
   const handleRedirectAfterLogin = (role: UserRoleEnum) => {
-    console.log(role)
     switch(role) {
         case 'cidadao':
           router.push('/(private)/(cidadao)/home')
