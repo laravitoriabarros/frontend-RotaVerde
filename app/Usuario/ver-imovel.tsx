@@ -22,7 +22,7 @@ export default function VerImovel() {
 
   useEffect(() => {
     if (imovel) {
-      setLogradouro(imovel.endereco.logradouro ?? ''); 
+      setLogradouro(imovel.endereco.logradouro ?? '');
       setLixoHoje(imovel.coletavel ? 'Sim' : 'Não');
     }
   }, [imovel]);
@@ -54,7 +54,7 @@ export default function VerImovel() {
       i.id === imovel.id
         ? {
             ...i,
-            endereco: { ...i.endereco, logradouro: logradouro }, 
+            endereco: { ...i.endereco, logradouro: logradouro },
           }
         : i
     );
@@ -92,7 +92,7 @@ export default function VerImovel() {
             <Text style={styles.label}>Logradouro</Text>
             <TextInput
               style={styles.input}
-              value={logradouro} 
+              value={logradouro}
               onChangeText={setLogradouro}
               placeholder="Digite o logradouro"
             />
@@ -124,8 +124,6 @@ export default function VerImovel() {
             </View>
           </>
         )}
-
-        ---
         <View style={styles.divider}>
           <Text style={styles.dividerText}>Informações de Hoje</Text>
         </View>
