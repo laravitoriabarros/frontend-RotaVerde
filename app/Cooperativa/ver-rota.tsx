@@ -34,7 +34,7 @@ export default function VerRota() {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Cooperativa/pagina-inicial')}
+          onPress={() => router.push('/home')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>

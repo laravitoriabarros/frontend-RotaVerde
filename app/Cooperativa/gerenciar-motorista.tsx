@@ -109,7 +109,7 @@ export default function GerenciarMotoristas() {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Cooperativa/pagina-inicial')}
+          onPress={() => router.push('/home')}
         >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>

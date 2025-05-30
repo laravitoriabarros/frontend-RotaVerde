@@ -36,6 +36,7 @@ export async function signInService(data : LoginFormData): Promise<ISignInServic
         }>()
 
         if(result) {
+            console.log(result)
             await storeAuthData({
                 token: result.token,
                 role: result.role

@@ -109,7 +109,7 @@ export default function Perfil() {
 
       {/* Barra de navegação inferior */}
       <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Cooperativa/pagina-inicial')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/home')}>
           <Icon name="map" size={28} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navIcon} onPress={() => router.push('/Cooperativa/gerenciar-caminhao')}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { Href, useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 
 export default function GerenciarCaminhoes() {
@@ -12,7 +12,7 @@ export default function GerenciarCaminhoes() {
   ]);
 
   const handleNavigate = (page: string) => {
-    router.push(page);
+    router.push(page as Href);
   };
 
   const handleDelete = (placa: string) => {
@@ -77,7 +77,7 @@ export default function GerenciarCaminhoes() {
       </View>
 
       <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/Cooperativa/pagina-inicial')}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/home')}>
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navIcon} onPress={() => handleNavigate('/Cooperativa/gerenciar-caminhao')}>

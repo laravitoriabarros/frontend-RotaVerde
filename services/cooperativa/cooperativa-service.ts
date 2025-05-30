@@ -28,12 +28,9 @@ export async function getCooperativas(): Promise<Cooperativa[]> {
 
 export async function getCooperativa(id: string): Promise<Cooperativa> {
     try {
-        console.log('Fetching cooperativa with ID:', id);
         const response = await api.get(`cooperativa/cooperativa/${id}`).json<Cooperativa>();
-        console.log('Cooperativa response:', response);
         return response;
     } catch (error) {
-        console.error('Error fetching cooperativa:', error);
         throw error;
     }
 }

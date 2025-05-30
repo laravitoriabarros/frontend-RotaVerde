@@ -16,6 +16,68 @@ export default function TelaCooperativa() {
   const [error, setError] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
+
+  const cooperativas: any[] = [
+    {
+      id: "123",
+      nome_usuario: "João Silva",
+      nome_cooperativa: "Coop Verde",
+      materiais_reciclaveis: ["Papel", "Plástico", "Vidro"],
+      area_atuacao: ["Centro", "Vila Mariana"],
+      endereco: {
+        logradouro: "Rua Exemplo",
+        numero: "123",
+        bairro: "Centro",
+        cidade: "São Paulo",
+        estado: "SP",
+        cep: "01000-000"
+      },
+      location: { latitude: -23.5505, longitude: -46.6333 },
+    },
+    {
+      id: "456",
+      nome_usuario: "Maria Oliveira",
+      nome_cooperativa: "Recicla Tudo",
+      materiais_reciclaveis: ["Metal", "Papelão", "Óleo de Cozinha"],
+      area_atuacao: ["Zona Norte", "Lapa"],
+      endereco: {
+        logradouro: "Avenida Principal",
+        numero: "789",
+        bairro: "Santana",
+        cidade: "Rio de Janeiro",
+        estado: "RJ",
+        cep: "20000-000"
+      },
+      location: { latitude: -22.9068, longitude: -43.1729 },
+    },
+    {
+      id: "789",
+      nome_usuario: "Carlos Pereira",
+      nome_cooperativa: "Eco Amigos",
+      // materiais_reciclaveis pode ser omitido ou null/undefined
+      area_atuacao: ["Barra da Tijuca"],
+      endereco: {
+        logradouro: "Rua das Palmeiras",
+        numero: "10A",
+        bairro: "Recreio",
+        cidade: "Salvador",
+        estado: "BA",
+        cep: "40000-000"
+      },
+      // location pode ser omitido ou null/undefined
+    },
+    {
+      id: "101",
+      nome_usuario: "Ana Costa",
+      nome_cooperativa: "Mundo Limpo",
+      materiais_reciclaveis: ["Plástico PET", "Alumínio", "Tetra Pak"],
+      area_atuacao: ["Copacabana", "Ipanema", "Leblon"],
+      // endereco pode ser omitido ou null/undefined
+      location: { latitude: -23.9608, longitude: -46.3333 }, // Exemplo para Santos
+    },
+  ];
+
+
   useEffect(() => {
     const fetchCooperativa = async () => {
       try {
@@ -27,25 +89,24 @@ export default function TelaCooperativa() {
         }
 
         if (userRole !== 'cooperativa') {
-          setError('User is not a cooperativa');
+          console.log(userRole)
+          // setError('User is not a cooperativa');
           return;
         }
 
         // Extract userId from token
         const payload = token.split('.')[1];
         const decodedPayload = JSON.parse(atob(payload));
-        console.log('Token payload:', decodedPayload);
+        // console.log('Token payload:', decodedPayload);
         const userId = decodedPayload.sub || decodedPayload.id;
-        console.log('Extracted userId:', userId);
+        // console.log('Extracted userId:', userId);
 
         if (!userId) {
           setError('User ID not found in token');
           return;
         }
 
-        // console.log('Fetching cooperativa with ID:', userId);
         const response = await getCooperativa(userId);
-        // console.log('Cooperativa response:', response);
         setCooperativa(response);
       } catch (err) {
         console.error('Error loading cooperativa:', err);
@@ -71,7 +132,7 @@ export default function TelaCooperativa() {
   };
 
   const goToPerfil = () => {
-    router.push('/Cooperativa/perfil-cooperativa');
+    router.push('/home');
   };
 
   return (
@@ -133,19 +194,11 @@ export default function TelaCooperativa() {
               <>
                 <Text style={styles.modalTitle}>{cooperativa.nome_cooperativa}</Text>
                 <Text style={styles.modalSubtitle}>Responsável: {cooperativa.nome_usuario}</Text>
-                <Text style={styles.modalSectionTitle}>Áreas de Atuação:</Text>
+                <Text style={styles.modalSectionTitle}>Bairros Atendidos:</Text>
                 <View style={styles.areasContainer}>
                   {cooperativa.area_atuacao.map((area, index) => (
                     <Text key={index} style={styles.areaItem}>
                       • {area}
-                    </Text>
-                  ))}
-                </View>
-                <Text style={styles.modalSectionTitle}>Bairros Atendidos:</Text>
-                <View style={styles.areasContainer}>
-                  {cooperativa.endereco.bairros_atendidos.map((bairro, index) => (
-                    <Text key={index} style={styles.areaItem}>
-                      • {bairro}
                     </Text>
                   ))}
                 </View>
@@ -172,7 +225,7 @@ export default function TelaCooperativa() {
 
       {/* Barra inferior */}
       <View style={styles.navBar}>
-        <TouchableOpacity style={styles.navIcon} onPress={() => {}}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => { }}>
           <Icon name="map" size={30} color="#3629B7" />
         </TouchableOpacity>
         <TouchableOpacity style={styles.navIcon} onPress={goToGerenciarCaminhao}>
