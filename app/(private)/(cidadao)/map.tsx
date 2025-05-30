@@ -4,9 +4,9 @@ import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from '
 import MapView, { Marker } from 'react-native-maps';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/Feather';
+import CooperativaModal, { Cooperativa } from '~/app/Usuario/CooperativaModal';
 import { useImoveis } from '~/providers/Imoveis-contexts';
 import { getCooperativas } from '~/services/cooperativa/cooperativa-service';
-import CooperativaModal, { Cooperativa } from './CooperativaModal';
 
 export default function TelaMapa() {
   const router = useRouter();
@@ -49,7 +49,7 @@ export default function TelaMapa() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+        <Image source={require('../../../assets/images/logo.png')} style={styles.logo} />
       </View>
 
       <Modal
@@ -63,26 +63,26 @@ export default function TelaMapa() {
           justifyContent: 'center',
           alignItems: 'center',
           backgroundColor: 'rgba(0,0,0,0.5)'
-        }}>
-          <View style={{
-            backgroundColor: 'white',
-            padding: 20,
-            borderRadius: 10,
-            minWidth: 250,
-            alignItems: 'center'
-          }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Imóvel Selecionado</Text>
-            {selectedImovel && (
-              <>
-                <Text>Nome: {selectedImovel.nome}</Text>
-                <Text>Endereço: {selectedImovel.endereco}</Text>
-                <Text>Status: {selectedImovel.status}</Text>
-              </>
-            )}
-            <Button title="Fechar" onPress={() => setModalVisible(false)} />
-          </View>
-        </View>
-      </Modal>
+       }}>
+        <View style={{
+          backgroundColor: 'white',
+          padding: 20,
+        borderRadius: 10,
+        minWidth: 250,
+        alignItems: 'center'
+     }}>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>Imóvel Selecionado</Text>
+      {selectedImovel && (
+        <>
+          <Text>Nome: {selectedImovel.nome}</Text>
+          <Text>Endereço: {selectedImovel.endereco.logradouro}, {selectedImovel.endereco.numero}, {selectedImovel.endereco.bairro}, {selectedImovel.endereco.cidade} </Text>
+          <Text>Status: {selectedImovel.status}</Text>
+        </>
+      )}
+      <Button title="Fechar" onPress={() => setModalVisible(false)} />
+    </View>
+  </View>
+</Modal>
 
       <CooperativaModal
         visible={modalCooperativaVisible}
@@ -103,13 +103,13 @@ export default function TelaMapa() {
         }}
         provider="google"
       >
-        {imoveis.filter(imovel => imovel.lixoParaColetaHoje === true)
+        {imoveis
         .map((imovel) => (
           <Marker
             key={imovel.id}
-            coordinate={{ latitude: imovel.latitude, longitude: imovel.longitude }}
-            title={imovel.nome}
-            description={imovel.endereco}
+            coordinate={{ latitude: imovel.location.latitude, longitude: imovel.location.longitude }}
+            title={imovel.endereco.logradouro}
+            description={`${imovel.endereco.logradouro}, ${imovel.endereco.numero} - ${imovel.endereco.bairro}`}
             pinColor="#2F2F2F"
             onPress={() => handleImovelPress(imovel)}
           />
@@ -136,25 +136,25 @@ export default function TelaMapa() {
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/pagina-inicial')}
+          onPress={() => router.push('/home')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/mapa')}
+          onPress={() => router.push('/map')}
         >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/tutoriais')}
+          onPress={() => router.push('/tutorials')}
         >
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/perfil')}
+          onPress={() => router.push('/profile')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>

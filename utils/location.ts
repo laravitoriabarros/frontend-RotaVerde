@@ -13,33 +13,15 @@ async function requestPermissions() {
   }
   return true;
 }
-// Sua função existente
-export async function getCoordinatesFromAddress(address: string): Promise<Coordinates | null> {
+
+
+export async function getAddressFromCoordinates(coordinates: Coordinates): Promise<Location.LocationGeocodedAddress[] | null> {
   try {
-    const hasPermission = await requestPermissions();
+     const hasPermission = await requestPermissions();
     if (!hasPermission) {
       alert('Permissão para acessar localização negada!');
       return null;
     }
-
-    const geocodedLocation = await Location.geocodeAsync(address);
-
-    if (geocodedLocation.length > 0) {
-      const { latitude, longitude } = geocodedLocation[0];
-      return { latitude, longitude };
-    } else {
-      console.warn('Endereço não encontrado para geocodificação:', address);
-      return null;
-    }
-  } catch (error) {
-    console.error('Erro ao geocodificar endereço:', address, error);
-    return null;
-  }
-}
-
-// Nova função para geocodificação reversa
-export async function getAddressFromCoordinates(coordinates: Coordinates): Promise<Location.LocationGeocodedAddress[] | null> {
-  try {
     const { latitude, longitude } = coordinates;
     const reverseGeocodedAddress = await Location.reverseGeocodeAsync({
       latitude,
@@ -47,7 +29,7 @@ export async function getAddressFromCoordinates(coordinates: Coordinates): Promi
     });
 
     if (reverseGeocodedAddress.length > 0) {
-      return reverseGeocodedAddress; // Retorna um array de possíveis endereços
+      return reverseGeocodedAddress; 
     } else {
       console.warn('Nenhum endereço encontrado para as coordenadas:', coordinates);
       return null;

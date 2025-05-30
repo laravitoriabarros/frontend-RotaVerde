@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import { tutorialContent } from './util/tutorialContent';
+import { tutorialContent } from '~/app/Usuario/util/tutorialContent';
 
 export default function Tutoriais() {
   const router = useRouter();
@@ -65,6 +65,8 @@ export default function Tutoriais() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollView}>
+        <Image source={require('../../../assets/images/reciclar.png')} style={styles.topImage} />
+
         <Text style={styles.h1}>Como participar da coleta seletiva?</Text>
 
         <Text style={styles.h3}>
@@ -153,29 +155,28 @@ export default function Tutoriais() {
         </View>
       </Modal>
 
-      {/* Barra Inferior */}
       <View style={styles.navBar}>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/pagina-inicial')}
+          onPress={() => router.push('/(private)/(cooperativa)/home')}
         >
           <Icon name="home" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/mapa')}
+          onPress={() => router.push('/map')}
         >
           <Icon name="map" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/Usuario/tutoriais')}
+          onPress={() => router.push('/tutorials')}
         >
           <Icon name="info" size={30} color="#2F2F2F" />
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navIcon}
-          onPress={() => router.push('/perfil')}
+          onPress={() => router.push('/profile')}
         >
           <Icon name="user" size={30} color="#2F2F2F" />
         </TouchableOpacity>
@@ -194,6 +195,13 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 80,
   },
+  topImage: {
+  width: 250,
+  height: 250,
+  resizeMode: 'contain',
+  alignSelf: 'center',
+  marginBottom: 20,
+},
   h1: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -253,7 +261,7 @@ const styles = StyleSheet.create({
     left: -20,
     right: -20,
     bottom: -1000,
-    backgroundColor: '#EEEEEE',
+    backgroundColor: 'white',
     borderRadius: 50,
     zIndex: 0,
   },
@@ -270,7 +278,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: 'white',
+    backgroundColor: '#3629B7',
     borderRadius: 20,
     width: '90%',
     maxWidth: 400,

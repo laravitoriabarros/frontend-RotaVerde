@@ -16,15 +16,15 @@ export default function UsuarioMotorista() {
   const [endereco, setEndereco] = useState('');
 
   const goToPerfil = () => {
-    router.push('/perfil');
+    router.push('/profile');
   };
 
   const goToHome = () => {
-    router.push('/(private)/motorista/home');
+    router.push('/home');
   };
 
   const verRotas = () => {
-    router.push('/Motorista/rotas-diarias');
+    router.push('/rotas-diarias');
   };
 
   return (

@@ -7,37 +7,14 @@ export default function PrivateLayout() {
     const router = useRouter();
     const segments = useSegments();
 
-
     useEffect(() => {
         if (!token) {
-            console.log('NÃO TEM TOKEN')
-            router.replace('/initial-decision');
-            return;
+            console.log({
+                message: 'Não tem Token - Private Layout'
+            })
+            return router.replace('/initial-decision')
         }
-        if (userRole) {
-            console.log(userRole)
-            switch (userRole) {
-                case 'cidadao':
-                    router.replace('/(private)/(cidadao)/home');
-                    break;
-                case 'motorista':
-                    router.replace('/(private)/(motorista)/home');
-                    break;
-                case 'cooperativa':
-                    router.replace('/(private)/(cooperativa)/home');
-                    break;
-                default:
-                    signOut();
-                    router.replace('/initial-decision');
-                    return;
-            }
-        }
-
-    }, [token, userRole, router, segments, signOut]);
-
-    if (!token) {
-        return <Redirect href="/(public)/initial-decision" />;
-    }
+    }, [token, userRole, router, signOut]);
 
     return (
         <Stack>

@@ -7,11 +7,16 @@ export default function AuthLayout() {
     const { token } = useAuth();
 
     if (token) {
+        console.log({
+                message: 'Tem Token - Public Layout'
+        })
         return <Redirect href={'/(private)' as Href} />;
     }
 
     return (
-        <Stack>
+        <Stack screenOptions={{
+            headerShown: false
+        }}>
             <Stack.Screen name="initial-decision" />
             <Stack.Screen name="register" />
             <Stack.Screen name="signin" />

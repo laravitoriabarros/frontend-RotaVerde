@@ -86,7 +86,7 @@ export default function Perfil() {
                 style={[styles.modalButton, { backgroundColor: '#4EC063' }]}
                 onPress={() => {
                   setShowDeleteModal(false);
-                  router.push('/pagina-decisao-inicial');
+                  router.push('/initial-decision');
                 }}
               >
                 <Text style={styles.modalButtonText}>Sim</Text>
