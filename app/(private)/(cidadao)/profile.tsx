@@ -11,9 +11,11 @@ import {
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
 import * as DocumentPicker from 'expo-document-picker';
+import { useAuth } from '~/providers/auth-context';
 
 export default function Perfil() {
   const router = useRouter();
+  const { signOut } = useAuth()
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
@@ -57,7 +59,10 @@ export default function Perfil() {
         <TouchableOpacity onPress={() => setShowDeleteModal(true)}>
           <Text style={styles.optionText}>Excluir Conta</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.replace('/signin')}>
+        <TouchableOpacity onPress={() => {
+          signOut()
+          router.replace('/signin')
+        }}>
           <Text style={[styles.optionText, { color: '#B00020' }]}>Sair da conta</Text>
         </TouchableOpacity>
       </View>

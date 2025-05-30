@@ -2,12 +2,15 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import Icon from 'react-native-vector-icons/Feather';
+import { useAuth } from '~/providers/auth-context';
 
 export default function Perfil() {
   const router = useRouter();
+  const { signOut } = useAuth()
 
   const handleOptionPress = (option: string) => {
     if (option === 'Sair da conta') {
+      signOut()
       router.replace('/signin');
     } else {
       console.log(`Opção clicada: ${option}`);
